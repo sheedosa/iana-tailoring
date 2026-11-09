@@ -81,7 +81,7 @@ export function ProductPage() {
           )}
           <div className="flex flex-col gap-4 rounded-pill border border-ink p-4">
             <div className="flex items-baseline justify-between"><h2 className="label text-mute">Trousers</h2><span className="text-lg">£[PRICE]</span></div>
-            <Grid legend="Waist" opts={TROUSER_WAISTS} value={w} set={setWaist} mine={sizes?.waist} cols="grid-cols-5" />
+            <Grid legend="Waist" opts={TROUSER_WAISTS} value={w} set={setWaist} mine={sizes?.waist} cols="grid-cols-5 xl:grid-cols-4" />
             <Grid legend="Leg" opts={TROUSER_LEGS.filter((x) => !p.legs || p.legs.includes(x))} value={g as (typeof TROUSER_LEGS)[number] | null} set={setLeg} mine={sizes?.leg} cols="grid-cols-3" dead={(x) => w !== null && out.includes(`${w}/${x}`)} />
           </div>
         </div>

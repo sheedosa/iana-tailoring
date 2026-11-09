@@ -23,7 +23,7 @@ function Strip() {
   return (
     <div className="bg-deep text-paper">
       <div className="wrap flex min-h-[34px] items-center justify-between gap-3 text-[13px] tracking-wide">
-        <p className="truncate"><span className="sm:hidden">Free delivery over {SITE.delivery.freeOver}</span><span className="hidden sm:inline">Free delivery on orders of {SITE.delivery.freeOver} and over · Click and collect in Tooting · Walk in seven days a week</span></p>
+        <p className="truncate"><span className="sm:hidden">Free delivery from {SITE.delivery.freeOver}</span><span className="hidden sm:inline">Free delivery on orders of {SITE.delivery.freeOver} and over · Click and collect in Tooting · Walk in seven days a week</span></p>
         {SITE.preview && <span className="label shrink-0 rounded-pill border border-paper/70 px-2 py-0.5 text-[11px]" title="Concept preview: products are samples and ordering opens at launch">Preview</span>}
       </div>
     </div>

@@ -9,14 +9,14 @@ import { SITE } from "../data/site";
 const WHO = [
   { to: "/shop/men", title: "Men", sub: "Suits, shirts, ties", image: "hero/street-mobile", pos: "object-[70%_40%]" },
   { to: "/shop/women", title: "Women", sub: "Suits, occasion, prom, bridal", image: "looks/womens-black", pos: "object-[50%_30%]" },
-  { to: "/shop/kids", title: "Kids", sub: "Ages 2 to 16", image: "looks/father-son", pos: "object-[40%_60%]" },
+  { to: "/shop/kids", title: "Kids", sub: "Page boys, suits, dresses", image: "looks/father-son", pos: "object-[40%_60%]" },
 ];
 
 const OCCASIONS = [
   { to: "/shop/bridal", t: "Weddings", d: "The bride, the groom, the page boys and the flower girls, all from one shop." },
   { to: "/shop/occasion", t: "Prom", d: "Prom dresses hemmed to your height, and suits with the jacket and trousers in your own sizes." },
   { to: "/shop/suits", t: "Work and interviews", d: "Men's and women's suits, white shirts and a spare pair of trousers." },
-  { to: "/shop/kids", t: "Communions and parties", d: "Suits and occasion dresses for ages 2 to 16." },
+  { to: "/shop/kids", t: "Communions and parties", d: "Suits and occasion dresses for boys and girls." },
 ];
 
 export function Home() {

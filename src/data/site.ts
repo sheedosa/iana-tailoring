@@ -41,7 +41,7 @@ export const SITE = {
   ],
 };
 
-export const deliveryLine = `Standard ${SITE.delivery.standard.price} · Express ${SITE.delivery.express.price} · Free over ${SITE.delivery.freeOver} · Click and collect in Tooting`;
+export const deliveryLine = `Standard ${SITE.delivery.standard.price} · Express ${SITE.delivery.express.price} · Free from ${SITE.delivery.freeOver} · Click and collect in Tooting`;
 
 // Sizing model for men's suits. Thresholds are conventional menswear practice; the client confirms their own runs.
 export const FITS = ["Slim", "Tailored", "Regular"] as const;

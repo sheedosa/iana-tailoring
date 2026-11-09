@@ -4,7 +4,7 @@
 import catalogue from "../data/catalogue.json";
 import type { Fit } from "../data/site";
 
-export type Art = "jacket" | "waistcoat" | "gown" | "dress" | "jumpsuit" | "shirt" | "tie" | "trousers" | "shopfront";
+export type Art = "jacket" | "waistcoat" | "gown" | "bridal" | "dress" | "jumpsuit" | "shirt" | "tie" | "trousers" | "shopfront";
 export type Who = "men" | "women" | "kids";
 export type Product = {
   handle: string;

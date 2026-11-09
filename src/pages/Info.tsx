@@ -29,7 +29,7 @@ export function FindMySizes() {
             </tbody>
           </table>
           <p className="text-base text-mute">Jacket size is your chest in inches ({JACKET_LENGTHS.join(", ")} lengths). Slim fit suits a chest about 8" bigger than the waist, tailored about 6", regular 4" or less. Between sizes, take the larger and have it altered in the shop.</p>
-          <p className="text-base text-mute">Women's pieces are in UK sizes 6 to 20; kids' by age, 2 to 16.</p>
+          <p className="text-base text-mute">Women's pieces go by UK dress size and kids' by age: [SIZE RANGES].</p>
         </div>
       </section>
     </>
