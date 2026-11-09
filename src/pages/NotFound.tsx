@@ -6,8 +6,8 @@ export function NotFound() {
     <section className="wrap flex flex-col items-center gap-4 py-24 text-center">
       <Seo title="Page not found" path="/404" description="That page isn't here." noindex />
       <h1 className="text-[44px]">That page isn't here</h1>
-      <p className="text-mute">It may have moved. Try the suits instead.</p>
-      <Link to="/shop/suits" className="btn btn-ink">Shop suits</Link>
+      <p className="text-mute">It may have moved. Start with the range instead.</p>
+      <Link to="/shop/all" className="btn btn-ink">Shop the range</Link>
     </section>
   );
 }

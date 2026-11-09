@@ -32,18 +32,19 @@ export const ORG_LD = {
   legalName: SITE.legalName,
   alternateName: SITE.tradingAs,
   url: SITE.url,
-  logo: absolute("/img/logo/iana-tailoring-horizontal-ochre.svg"),
+  logo: absolute("/img/logo/iana-formal-horizontal-ochre.svg"),
   image: absolute("/img/og/og-home.jpg"),
   telephone: SITE.phoneIntl,
   foundingDate: String(SITE.since),
   address: { "@type": "PostalAddress", streetAddress: SITE.address.street, addressLocality: SITE.address.area, addressRegion: SITE.address.city, postalCode: SITE.address.postcode, addressCountry: "GB" },
   openingHoursSpecification: { "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], opens: "09:00", closes: "18:00" },
   sameAs: [SITE.social.instagram, SITE.social.facebook],
+  hasMerchantReturnPolicy: { "@type": "MerchantReturnPolicy", applicableCountry: "GB", returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow", merchantReturnDays: SITE.returns.days },
 };
 
 export function Seo({ title, description, path, image = "/img/og/og-home.jpg", type = "website", jsonLd, noindex }: Props) {
   useEffect(() => {
-    const full = path === "/" ? `${title} — I&A Tailoring` : `${title} | I&A Tailoring`;
+    const full = path === "/" ? `${title} — I&A Formal` : `${title} | I&A Formal`;
     document.title = full;
     const url = `${SITE.url}${path === "/" ? "/" : path}`;
     const img = absolute(image);

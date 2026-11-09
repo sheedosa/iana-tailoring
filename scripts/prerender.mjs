@@ -10,7 +10,7 @@ const SITE = "https://sheedosa.github.io" + BASE;
 const dist = new URL("../dist/", import.meta.url).pathname;
 const cat = JSON.parse(readFileSync(new URL("../src/data/catalogue.json", import.meta.url)));
 
-const routes = ["/", "/find-my-sizes", "/made-to-measure", "/visit", "/shop/all",
+const routes = ["/", "/find-my-sizes", "/made-to-measure", "/alterations", "/visit", "/delivery-returns", "/shop/all",
   ...cat.collections.map((c) => `/shop/${c.handle}`),
   ...cat.products.map((p) => `/products/${p.handle}`)];
 
@@ -21,7 +21,9 @@ const server = createServer((req, res) => {
   if (!existsSync(f) || statSync(f).isDirectory()) f = join(dist, "index.html");
   res.setHeader("Content-Type", types[extname(f)] ?? "application/octet-stream");
   res.end(readFileSync(f));
-}).listen(4999);
+}).listen(Number(process.env.PRERENDER_PORT ?? 0));
+await new Promise((r) => server.once("listening", r));
+const PORT = server.address().port;
 
 const exe = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE || (existsSync("/opt/pw-browsers/chromium") ? "/opt/pw-browsers/chromium" : undefined);
 const browser = await chromium.launch(exe ? { executablePath: exe } : {});
@@ -29,7 +31,7 @@ const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
 page.route(/fonts\.(googleapis|gstatic)\.com/, (r) => r.abort()); // fonts aren't needed for markup
 let n = 0;
 for (const r of routes) {
-  await page.goto(`http://localhost:4999${BASE}${r}`, { waitUntil: "networkidle" });
+  await page.goto(`http://localhost:${PORT}${BASE}${r}`, { waitUntil: "networkidle" });
   await page.waitForFunction(() => document.querySelector("h1") && !document.body.innerText.includes("Loading"), null, { timeout: 10000 }).catch(() => {});
   let html = await page.content();
   html = html.replace("<html", '<html data-prerendered="1"'); // informational only
@@ -44,18 +46,20 @@ const today = new Date().toISOString().slice(0, 10);
 writeFileSync(join(dist, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${routes.map((r) => `  <url><loc>${SITE}${r === "/" ? "/" : r}</loc><lastmod>${today}</lastmod><changefreq>${r.startsWith("/products") ? "weekly" : "monthly"}</changefreq><priority>${r === "/" ? "1.0" : r.startsWith("/shop/") ? "0.9" : "0.7"}</priority></url>`).join("\n")}\n</urlset>\n`);
 
 const cols = cat.collections.map((c) => `- [${c.title}](${SITE}/shop/${c.handle}): ${c.blurb}`).join("\n");
-writeFileSync(join(dist, "llms.txt"), `# I&A Tailoring
+writeFileSync(join(dist, "llms.txt"), `# I&A Formal
 
-> Suits, shirts and made to measure from I & A Fashions Limited (trading as I & A Tailoring), a family business at 84 Mitcham Road, Tooting, London SW17 9NG, trading since 1993. Suits are sold as separates: the jacket (chest 36 to 50, S/R/L) and trousers (waist 28 to 44, leg 30/32/34) each in the customer's own size. Free alterations on suits bought in store. Made to measure with two fittings. Open Monday to Sunday 9am to 6pm. Phone 020 8767 8613. Sister shops: I&A Fashions, I&A Schoolwear.
+> Formal wear for men, women and kids from I & A Fashions Limited (trading as I & A Formal), a family business at 84 Mitcham Road, Tooting, London SW17 9NG, trading since 1993. Men's and women's suits, occasion and prom dresses, bridal, and kids' suits and dresses (ages 2 to 16). New: men's suits with the jacket (chest 36 to 50, S/R/L) and trousers (waist 28 to 44, leg 30/32/34) in different sizes. Made to measure from £250: 50% deposit, usually 4 to 6 weeks, two fittings. Alterations in the shop. Walk in, no appointment needed: open Monday to Sunday 9am to 6pm. Phone 020 8767 8613. Delivery: standard £4.95 (5 working days), express £7.95 (48 hours), free on orders of £100 and over, click and collect in Tooting. 28-day returns; suits, bridal dresses and prom dresses are not returnable. Sister shops: I&A Fashions, I&A Schoolwear.
 
-Note: this site is a concept preview. Products are samples; ordering and booking open at launch.
+Note: this site is a concept preview. Products are samples; ordering opens at launch.
 
 ## Collections
 ${cols}
 
 ## Help
 - [Find my sizes](${SITE}/find-my-sizes): jacket and trouser sizes from height, chest and waist
-- [Made to measure](${SITE}/made-to-measure): process, prices and booking
-- [Visit the shop](${SITE}/visit): address, hours, alterations
+- [Made to measure](${SITE}/made-to-measure): process, prices, deposit and timing
+- [Alterations](${SITE}/alterations): what we alter and how to ask
+- [Visit the shop](${SITE}/visit): address, hours, phone
+- [Delivery and returns](${SITE}/delivery-returns): delivery options and returns policy
 `);
 console.log(`prerendered ${n} routes, sitemap + llms.txt written`);
