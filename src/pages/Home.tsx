@@ -11,7 +11,7 @@ import { SITE } from "../data/site";
 const DOORS: { to: string; title: string; line: string; art: Art; small?: boolean }[] = [
   { to: "/shop/men", title: "Men", line: "Suits, shirts, ties and spare trousers", art: "jacket" },
   { to: "/shop/women", title: "Women", line: "Trouser suits, occasion, prom and bridal", art: "gown" },
-  { to: "/shop/kids", title: "Kids", line: "Suits and dresses, ages 2 to 16", art: "waistcoat", small: true },
+  { to: "/shop/kids", title: "Kids", line: "Page boys, suits and dresses", art: "waistcoat", small: true },
 ];
 
 export function Home() {
