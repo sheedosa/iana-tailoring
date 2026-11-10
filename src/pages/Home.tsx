@@ -39,7 +39,7 @@ export function Home() {
             <li key={w.to} className="rise w-[68vw] shrink-0 snap-start sm:w-auto" style={{ "--i": i } as React.CSSProperties}>
               <Link to={w.to} className="group flex flex-col">
                 <span className="block overflow-hidden rounded-pill bg-deep"><img src={img(w.image, w.small)} alt={w.alt} fetchPriority={i === 0 ? "high" : undefined} width="1100" height="1366" className={`aspect-[3/4] w-full object-cover lg:aspect-[4/5] xl:aspect-[5/6] ${w.pos}`} /></span>
-                <span className="flex h-28 flex-col justify-center sm:h-32">
+                <span className="flex h-28 flex-col justify-start pt-5 sm:h-32 sm:pt-6">
                   <span className="display t-section underline decoration-transparent decoration-1 underline-offset-[0.18em] group-hover:decoration-current">{w.title}</span>
                   <span className="voice text-mute">{w.sub}</span>
                 </span>

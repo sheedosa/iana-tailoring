@@ -39,7 +39,16 @@ export function Header() {
   useEffect(close, [pathname]);
   useEffect(() => {
     if (!open) return;
-    const esc = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    const esc = (e: KeyboardEvent) => {
+      const bar = document.querySelector<HTMLElement>("header");
+      if (e.key === "Escape") { setOpen(false); bar?.querySelector<HTMLElement>("button[aria-controls]")?.focus(); return; }
+      if (e.key !== "Tab" || !bar) return;
+      // Keep Tab inside the header and its open panel.
+      const stops = [...bar.querySelectorAll<HTMLElement>("a[href], button")].filter((el) => el.offsetParent !== null);
+      const first = stops[0], last = stops[stops.length - 1], at = document.activeElement;
+      if (e.shiftKey && (at === first || !bar.contains(at))) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && (at === last || !bar.contains(at))) { e.preventDefault(); first.focus(); }
+    };
     document.body.style.overflow = "hidden";
     window.addEventListener("keydown", esc);
     return () => { document.body.style.overflow = ""; window.removeEventListener("keydown", esc); };
