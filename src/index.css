@@ -1,16 +1,19 @@
 @import "tailwindcss";
 
-/* I&A brand guide 2022, Formal variant: Ochre, Sage, White. Darker and more structured than Fashions; no pink.
-   Headings: Cormorant Garamond Bold, sentence case. Body and labels: Agrandir (Lexend stands in; swap --font-sans only).
-   Ochre is the ground for hero and footer; Sage sets off the cloth. Corners near-square. */
+/* I & A Formal, v3. Ochre, Sage and warm white from the I&A guide 2022 (Formal variant: no pink).
+   Caslon is the voice: Libre Caslon Display for the hero, page titles and section titles (one weight, size carries
+   the hierarchy), Libre Caslon Text for sub-heads and the italic second voice, Hanken Grotesk for text and controls.
+   The one motif is the tailor's tape (.tape): the fitting line, the size ruler, a short length under page titles
+   and the footer divider. Corners 3px. */
 @theme {
-  --font-serif: "Cormorant Garamond", Georgia, serif;
-  --font-sans: "Lexend", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Libre Caslon Display", "Libre Caslon Text", Georgia, serif;
+  --font-serif: "Libre Caslon Text", Georgia, serif;
+  --font-sans: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
   --color-ink: #45353a;        /* Ochre */
   --color-ink-soft: #5e4b51;
   --color-mute: #665459;       /* secondary text, AA on paper and sage */
   --color-paper: #fbfbf9;      /* warm white ground */
-  --color-deep: #2a2326;       /* footer, pressed states */
+  --color-deep: #2a2326;       /* footer, strip */
   --color-sage: #d8e2dc;
   --color-stone: #e9e4e5;
   --color-line: #e2dcdd;
@@ -18,36 +21,141 @@
   --radius-pill: 3px;
 }
 
+:root {
+  /* One fluid scale. Pages never set a heading size. */
+  --t-hero: clamp(2.75rem, 1.5rem + 5.4vw, 6.25rem);
+  --t-title: clamp(2.5rem, 1.55rem + 3.7vw, 4.75rem);
+  --t-section: clamp(1.875rem, 1.42rem + 1.75vw, 3rem);
+  --t-sub: clamp(1.25rem, 1.16rem + 0.4vw, 1.5rem);
+  --t-lede: clamp(1.0625rem, 1rem + 0.32vw, 1.25rem);
+  --t-body: clamp(1rem, 0.97rem + 0.14vw, 1.0625rem);
+  --t-small: 0.875rem;
+  --ease-out: cubic-bezier(.16, 1, .3, 1);
+  --dur-1: 160ms;
+  --dur-2: 420ms;
+  --dur-3: 760ms;
+}
+
 @layer base {
   html { scroll-behavior: smooth; }
-  body { @apply bg-paper text-ink font-sans antialiased; font-size: 16px; font-weight: 400; line-height: 1.55; }
-  strong, b { font-weight: 500; }
-  h1, h2, .display { font-family: var(--font-serif); font-weight: 700; letter-spacing: -0.005em; line-height: 1.04; text-wrap: balance; }
-  h3 { font-weight: 400; text-wrap: balance; }
+  body { @apply bg-paper text-ink font-sans antialiased; font-size: var(--t-body); font-weight: 400; line-height: 1.55; }
+  strong, b { font-weight: 600; }
+  h1, h2, .display { font-family: var(--font-display); font-weight: 400; text-wrap: balance; }
+  h1 { font-size: var(--t-title); line-height: 1.02; letter-spacing: -0.012em; }
+  h2 { font-size: var(--t-section); line-height: 1.08; letter-spacing: -0.006em; }
+  h3 { font-family: var(--font-serif); font-weight: 400; font-size: var(--t-sub); line-height: 1.25; text-wrap: balance; }
+  p { text-wrap: pretty; }
   a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 2px; }
+  .on-dark :focus-visible { outline-color: var(--color-paper); }
   summary { list-style: none; }
   summary::-webkit-details-marker { display: none; }
+  input { font-size: 1rem; }
 }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; animation: none !important; } }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { transition: none !important; animation: none !important; }
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}
+::view-transition-group(*) { animation-duration: 520ms; animation-timing-function: cubic-bezier(.16, 1, .3, 1); }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 260ms; }
 
 @layer components {
-  /* Labels are always the sans face, even on an h2 or h3. */
-  .label { font-family: var(--font-sans); text-transform: uppercase; letter-spacing: 0.15em; font-weight: 400; font-size: 0.75rem; line-height: 1.4; }
   .wrap { @apply mx-auto w-full max-w-[1320px] px-4 sm:px-8; }
 
-  .btn { @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-pill px-6 text-center text-[0.8125rem] font-normal uppercase tracking-[0.12em] transition-colors; }
-  .btn-ink { @apply bg-ink text-paper hover:bg-ink-soft; }
+  /* Type steps */
+  .t-hero { font-size: var(--t-hero); line-height: 0.98; letter-spacing: -0.018em; }
+  .t-title { font-size: var(--t-title); line-height: 1.02; letter-spacing: -0.012em; }
+  .t-section { font-size: var(--t-section); line-height: 1.08; letter-spacing: -0.006em; }
+  .t-sub { font-family: var(--font-serif); font-weight: 400; font-size: var(--t-sub); line-height: 1.25; letter-spacing: 0; }
+  .t-lede { font-size: var(--t-lede); line-height: 1.5; }
+  .t-small { font-size: var(--t-small); line-height: 1.5; }
+  .t-figure { font-family: var(--font-display); font-size: clamp(3rem, 2.2rem + 3.4vw, 5.5rem); line-height: 0.95; letter-spacing: -0.02em; font-variant-numeric: lining-nums; }
+  /* The second voice: Caslon Text italic, one short line under a title or a name. */
+  .voice { font-family: var(--font-serif); font-style: italic; font-weight: 400; font-size: clamp(1.125rem, 1.06rem + 0.3vw, 1.3125rem); line-height: 1.4; }
+  /* Caps labels: controls, table heads and footer headings only. Always the sans face. */
+  .label { font-family: var(--font-sans); text-transform: uppercase; letter-spacing: 0.15em; font-weight: 500; font-size: 0.75rem; line-height: 1.4; }
+  .measure { max-width: 34rem; }
+
+  .btn { @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-pill px-6 text-center text-base font-semibold; transition: background-color var(--dur-1) ease, color var(--dur-1) ease; }
+  .btn-ink { @apply bg-ink text-paper hover:bg-deep; }
   .btn-paper { @apply bg-paper text-ink hover:bg-sage; }
   .btn-outline-paper { @apply border border-paper bg-transparent text-paper hover:bg-paper hover:text-ink; }
   .btn-ghost { @apply border border-ink bg-transparent text-ink hover:bg-ink hover:text-paper; }
-  .chip { @apply inline-flex min-h-11 items-center rounded-pill border border-ink px-4 text-sm whitespace-nowrap transition-colors; }
+  .link { @apply inline-flex min-h-11 items-center font-semibold underline underline-offset-4; text-decoration-thickness: 1px; }
+  .link:hover { text-decoration-thickness: 2px; }
+  .chip { @apply inline-flex min-h-11 items-center rounded-pill border border-ink px-4 text-base whitespace-nowrap; }
   .chip[aria-pressed="true"], .chip[aria-current="page"] { @apply bg-ink text-paper; }
-  .pick { @apply inline-flex h-11 min-w-12 items-center justify-center rounded-pill border border-ink px-3 text-[15px] hover:bg-stone; }
+  .pick { @apply inline-flex h-11 min-w-11 items-center justify-center rounded-pill border border-ink px-2 text-base hover:bg-sage; font-variant-numeric: tabular-nums; }
   .pick[aria-pressed="true"] { @apply bg-ink text-paper hover:bg-ink; }
   .pick:disabled { @apply cursor-not-allowed border-line text-mute line-through hover:bg-transparent; }
-  .chev { @apply ml-auto shrink-0 transition-transform; }
+  .chev { @apply ml-auto shrink-0; transition: transform var(--dur-1) ease; }
   details[open] > summary .chev { transform: rotate(180deg); }
+  .field { @apply h-12 w-full min-w-0 rounded-pill border border-ink bg-paper px-3 text-base; }
 
-  .lift img { transition: transform 700ms cubic-bezier(.2,.8,.2,1); }
-  .lift:hover img { transform: scale(1.02); }
+  /* ---- The tailor's tape ------------------------------------------------------------------------
+     A strip of cells, one per inch: a long tick, quarter and half ticks, and the numeral. Drawn with
+     solid 1px bars so it stays sharp at any width. --u is the width of an inch. */
+  .tape { --u: 28px; position: relative; display: flex; height: 2.5rem; background: var(--color-paper); color: var(--color-ink);
+    border-block: 1px solid var(--color-ink); font: 600 0.6875rem/1 var(--font-sans); font-variant-numeric: tabular-nums; overflow: hidden; }
+  .tape > i { position: relative; flex: 0 0 var(--u); font-style: normal;
+    background:
+      linear-gradient(currentColor, currentColor) 0 0 / 1px 1.05rem no-repeat,
+      linear-gradient(currentColor, currentColor) 25% 0 / 1px 0.4rem no-repeat,
+      linear-gradient(currentColor, currentColor) 50% 0 / 1px 0.7rem no-repeat,
+      linear-gradient(currentColor, currentColor) 75% 0 / 1px 0.4rem no-repeat; }
+  .tape > i::after { content: attr(data-n); position: absolute; left: 4px; bottom: 0.3rem; }
+  /* The brass end. */
+  .tape-end { flex: 0 0 0.875rem; background: var(--color-deep); border-right: 1px solid var(--color-ink); position: relative; }
+  .tape-end::after { content: ""; position: absolute; left: 50%; top: 50%; width: 5px; height: 5px; margin: -2.5px; border-radius: 50%; background: var(--color-sage); }
+  .on-dark .tape, .tape.on-dark { border-block-color: var(--color-paper); }
+  .on-dark .tape-end { background: var(--color-sage); }
+  .on-dark .tape-end::after { background: var(--color-deep); }
+  /* The length measured so far, and the clip that marks the place. */
+  .tape-fill { position: absolute; inset-block: 0; left: 0; background: var(--color-sage); transition: width var(--dur-2) var(--ease-out), height var(--dur-2) var(--ease-out); }
+  .tape-clip { position: absolute; top: -0.375rem; bottom: -0.375rem; width: 3px; margin-left: -1px; background: currentColor; transition: left var(--dur-2) var(--ease-out), top var(--dur-2) var(--ease-out); }
+  .tape-clip::before { content: ""; position: absolute; left: 50%; top: -1px; width: 0.75rem; height: 0.75rem; margin-left: -0.375rem; background: currentColor; clip-path: polygon(0 0, 100% 0, 50% 100%); }
+
+  /* Vertical tape (phones): ticks come in from the right edge. */
+  .tape-v { flex-direction: column; height: auto; width: 2.5rem; border-block: 0; border-inline: 1px solid var(--color-ink); }
+  .tape-v > i {
+    background:
+      linear-gradient(currentColor, currentColor) 100% 0 / 1.05rem 1px no-repeat,
+      linear-gradient(currentColor, currentColor) 100% 25% / 0.4rem 1px no-repeat,
+      linear-gradient(currentColor, currentColor) 100% 50% / 0.7rem 1px no-repeat,
+      linear-gradient(currentColor, currentColor) 100% 75% / 0.4rem 1px no-repeat; }
+  .tape-v > i::after { left: 0.3rem; top: 5px; bottom: auto; }
+  .tape-v .tape-end { border-right: 0; border-bottom: 1px solid var(--color-ink); }
+  .on-dark .tape-v { border-inline-color: var(--color-paper); }
+  .tape-v .tape-fill { inset-block: auto; top: 0; inset-inline: 0; }
+
+  /* The fitting line: the tape runs from the page margin off the right edge; five stages sit on it. */
+  .fit { container-type: inline-size; --tape-n: 30; }
+  @media (min-width: 64rem) { .fit { --tape-n: 60; } }
+  .fit-track { position: relative; touch-action: pan-y; cursor: pointer; color: var(--color-paper); }
+  .fit-track .tape { width: 100vw; height: 3rem; }
+  .fit-track .tape > i { flex-basis: calc(100cqw / var(--tape-n)); }
+  .fit-end { position: absolute; right: 100%; top: 0; bottom: 0; width: 0.875rem; border-right: 0; }
+  .fit-track .tape-fill { width: calc(var(--sel) * 20cqw); }
+  .fit-track .tape-clip { left: calc(var(--sel) * 20cqw); }
+  .fit-stage { position: relative; display: flex; width: 100%; flex-direction: column; gap: 0.125rem; padding: 0 0.75rem 1.25rem 0.875rem; text-align: left; min-height: 2.75rem; height: 100%; }
+  .fit-stage::before { content: ""; position: absolute; left: 0; top: 0.3rem; bottom: 0; width: 1px; background: currentColor; opacity: .55; }
+  .fit-stage[aria-pressed="true"]::before { opacity: 1; }
+  .fit-stage .t-sub { font-size: clamp(1rem, 0.4rem + 1.3cqw, 1.5rem); text-decoration: underline transparent; text-underline-offset: 0.3em; text-decoration-thickness: 1px; transition: text-decoration-color var(--dur-1) ease; }
+  .fit-stage:hover .t-sub, .fit-stage[aria-pressed="true"] .t-sub { text-decoration-color: currentColor; }
+  .fit-row { position: relative; padding-left: 1.125rem; }
+  .fit-row::before { content: ""; position: absolute; left: 0; top: 1.4rem; width: 0.75rem; height: 1px; background: currentColor; }
+
+  /* What changed, answering a choice. */
+  .swap { animation: swap var(--dur-2) var(--ease-out) both; }
+  /* The one unprompted moment: the three hero panels arriving. */
+  .rise { animation: rise var(--dur-3) var(--ease-out) both; animation-delay: calc(var(--i, 0) * 90ms + 80ms); }
+  .sheet { animation: sheet var(--dur-2) var(--ease-out) both; }
+
+  .rail { @apply -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4; scrollbar-width: none; scroll-padding-inline: 1rem; }
+  .rail::-webkit-scrollbar { display: none; }
 }
+
+@keyframes swap { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+@keyframes sheet { from { transform: translateY(100%); } to { transform: none; } }

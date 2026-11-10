@@ -34,6 +34,7 @@ export const SITE = {
     "fits offered (slim / tailored / regular) and size runs for men, women and kids",
     "alterations price list and usual turnaround",
     "made-to-measure cloths and the price list above £250",
+    "when each of the two fittings falls within the 4 to 6 weeks",
     "whether made to measure covers women's and kids' pieces",
     "whether online orders can be altered in the shop",
     "photography of the range and the shop front",
@@ -41,7 +42,7 @@ export const SITE = {
   ],
 };
 
-export const deliveryLine = `Standard ${SITE.delivery.standard.price} · Express ${SITE.delivery.express.price} · Free from ${SITE.delivery.freeOver} · Click and collect in Tooting`;
+export const deliveryLine = `Standard delivery ${SITE.delivery.standard.price}, express ${SITE.delivery.express.price}, free on orders of ${SITE.delivery.freeOver} and over. Click and collect in Tooting`;
 
 // Sizing model for men's suits. Thresholds are conventional menswear practice; the client confirms their own runs.
 export const FITS = ["Slim", "Tailored", "Regular"] as const;
@@ -66,4 +67,4 @@ export function suggestSizes(heightIn: number, chest: number, waist: number): Si
   const fit: Fit = drop >= 8 ? "Slim" : drop >= 5 ? "Tailored" : "Regular";
   return { chest: near(JACKET_CHESTS, chest), length, waist: near(TROUSER_WAISTS, waist), leg, fit };
 }
-export const sizeLabel = (s: Sizes) => `${s.chest}${s.length} · ${s.waist}/${s.leg}`;
+export const sizeLabel = (s: Sizes) => `${s.chest}${s.length}, ${s.waist}/${s.leg}`;

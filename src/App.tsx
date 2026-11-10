@@ -8,6 +8,11 @@ import { ProductPage } from "./pages/ProductPage";
 import { Alterations, DeliveryReturns, FindMySizes, MadeToMeasure, Visit } from "./pages/Info";
 import { NotFound } from "./pages/NotFound";
 
+function Main({ children }: { children: React.ReactNode }) {
+  const { pathname } = useLocation();
+  return <main id="main" className={pathname === "/" ? "" : "pb-20"}>{children}</main>;
+}
+
 function ScrollTop() {
   const { pathname, hash } = useLocation();
   useEffect(() => { if (hash) document.getElementById(hash.slice(1))?.scrollIntoView(); else window.scrollTo(0, 0); }, [pathname, hash]);
@@ -21,7 +26,7 @@ export default function App() {
         <ScrollTop />
         <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-pill focus:bg-paper focus:text-ink focus:px-4 focus:py-3">Skip to content</a>
         <Header />
-        <main id="main">
+        <Main>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/shop/:handle" element={<Shop />} />
@@ -33,7 +38,7 @@ export default function App() {
             <Route path="/delivery-returns" element={<DeliveryReturns />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
-        </main>
+        </Main>
         <Footer />
       </SizesProvider>
     </BrowserRouter>

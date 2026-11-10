@@ -20,7 +20,7 @@ npm run build:spa    # without prerender
 ## What's real and what's sample
 - **Real (confirmed by the client):** business name, address, phone, hours, company and VAT numbers; delivery (standard £4.95, 5 working days; express £7.95, 48 hours; free on orders of £100 and over; click and collect in Tooting); 28-day returns except suits, bridal and prom dresses; made to measure from £250, 50% deposit, usually 4 to 6 weeks, 2 fittings; walk-in appointments.
 - **Sample:** every product in `src/data/catalogue.json`, product prices (`£[PRICE]`), the size thresholds in `src/data/site.ts`, the alterations price list. Ordering is switched off (`SITE.preview`).
-- **Brand:** I & A Formal lockups in `public/img/logo/`, rebuilt from the brand guide 2022 lockup pattern (outlined Cormorant Garamond and Lexend).
+- **Brand:** I & A Formal lockups in `public/img/logo/`, rebuilt from the brand guide 2022 lockup pattern (outlined Cormorant Garamond and Lexend; the logo is unchanged in v3). Site type is Libre Caslon Display, Libre Caslon Text and Hanken Grotesk; the tailor's tape is the one motif (see `CLAUDE.md`, Design system v3).
 - Open questions for the client are in `SITE.toConfirm`.
 
 ## Going live

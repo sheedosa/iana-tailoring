@@ -1,35 +1,40 @@
 import { Link } from "react-router-dom";
 import { Seo, breadcrumbs } from "../components/Seo";
 import { SizeFinder } from "../components/SizeFinder";
-import { MtmFacts } from "../components/MtmFacts";
+import { FittingLine, TitleTape } from "../components/Tape";
 import { PhotoSlot } from "../components/Art";
 import { img } from "../lib/store";
 import { JACKET_LENGTHS, SITE } from "../data/site";
 
-const tel = <a href={`tel:${SITE.phoneIntl}`} className="whitespace-nowrap underline">{SITE.phone}</a>;
+const tel = <a href={`tel:${SITE.phoneIntl}`} className="whitespace-nowrap underline underline-offset-4">{SITE.phone}</a>;
 const crumbs = (name: string, path: string) => breadcrumbs([{ name: "Home", path: "/" }, { name, path }]);
+const th = "label py-3 font-medium";
 
 export function FindMySizes() {
   return (
     <>
       <Seo title="Find my sizes" path="/find-my-sizes" jsonLd={crumbs("Find my sizes", "/find-my-sizes")} description="Men's suits with the jacket and trousers in different sizes. Enter height, chest and waist for your jacket size and length, trouser waist and leg, and fit. I&A Formal, Tooting." />
-      <section className="wrap grid gap-12 py-10 sm:py-14 lg:grid-cols-[1.3fr_1fr] lg:gap-16">
-        <div className="flex flex-col gap-5">
-          <p className="label text-mute">Men's suits · new</p>
-          <h1 className="text-[40px] sm:text-[56px]">Find my sizes</h1>
-          <p className="max-w-xl text-[17px]">Our men's suits now come with the jacket and trousers in different sizes. Three measurements give you both, and the fit for your build. Saved on this device and marked on every suit.</p>
-          <div className="rounded-pill bg-sage p-5 sm:p-6"><SizeFinder big /></div>
+      <section className="wrap grid gap-x-14 gap-y-5 pb-10 pt-10 sm:pt-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-end">
+        <div className="flex flex-col gap-4">
+          <h1>Find my sizes</h1>
+          <TitleTape />
         </div>
-        <div className="flex flex-col gap-4 lg:pt-24">
-          <h2 className="text-[30px] sm:text-[34px]">How men's sizes work</h2>
-          <table className="w-full text-left text-base">
-            <thead><tr className="border-b border-ink"><th className="label py-3 font-normal">Jacket length</th><th className="label py-3 font-normal">For heights</th><th className="label py-3 font-normal">Trouser leg</th></tr></thead>
+        <p className="t-lede measure">Our men's suits now come with the jacket and trousers in different sizes. Three measurements give you both, and the fit for your build. Saved on this device and marked on every suit.</p>
+      </section>
+      <section className="bg-sage">
+        <div className="wrap py-10 sm:py-14"><SizeFinder big /></div>
+      </section>
+      <section className="wrap grid gap-x-14 gap-y-6 pt-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)]">
+        <h2>How men's sizes work</h2>
+        <div className="flex flex-col gap-4">
+          <table className="w-full text-left">
+            <thead><tr className="border-b border-ink"><th className={th}>Jacket length</th><th className={th}>For heights</th><th className={th}>Trouser leg</th></tr></thead>
             <tbody>
-              {[["S", "under 5'8\"", "30"], ["R", "5'8\" to 6'0\"", "32"], ["L", "over 6'0\"", "34"]].map(([a, b, c]) => <tr key={a} className="border-b border-line"><td className="py-3">{a}</td><td className="py-3 text-mute">{b}</td><td className="py-3">{c}"</td></tr>)}
+              {[["S", "under 5'8\"", "30"], ["R", "5'8\" to 6'0\"", "32"], ["L", "over 6'0\"", "34"]].map(([a, b, c]) => <tr key={a} className="border-b border-line"><td className="py-3.5">{a}</td><td className="py-3.5 text-mute">{b}</td><td className="py-3.5">{c}"</td></tr>)}
             </tbody>
           </table>
-          <p className="text-base text-mute">Jacket size is your chest in inches ({JACKET_LENGTHS.join(", ")} lengths). Slim fit suits a chest about 8" bigger than the waist, tailored about 6", regular 4" or less. Between sizes, take the larger and have it altered in the shop.</p>
-          <p className="text-base text-mute">Women's pieces go by UK dress size and kids' by age: [SIZE RANGES].</p>
+          <p className="max-w-[40rem]">Jacket size is your chest in inches ({JACKET_LENGTHS.join(", ")} lengths). Slim fit suits a chest about 8" bigger than the waist, tailored about 6", regular 4" or less. Between sizes, take the larger and have it altered in the shop.</p>
+          <p className="max-w-[40rem] text-mute">Women's pieces go by UK dress size and kids' by age: [SIZE RANGES].</p>
         </div>
       </section>
     </>
@@ -38,55 +43,42 @@ export function FindMySizes() {
 
 export function MadeToMeasure() {
   const m = SITE.madeToMeasure;
-  const steps = [
-    ["First visit", "Walk in. Choose the cloth and the details, we take your measurements, and you pay a " + m.deposit + " deposit."],
-    ["First fitting", "Try the suit part-made. We mark every adjustment on you."],
-    ["Second fitting", "The last checks on the finished suit."],
-    ["Collection", `Usually ${m.weeks} after your first visit. Collect it and pay the balance.`],
-  ];
   return (
     <>
       <Seo title="Made to measure in Tooting" path="/made-to-measure" jsonLd={[crumbs("Made to measure", "/made-to-measure"), { "@context": "https://schema.org", "@type": "Service", name: "Made to measure suits", provider: { "@id": `${SITE.url}/#store` }, areaServed: "London", offers: { "@type": "Offer", priceCurrency: "GBP", price: "250", description: "From £250, 50% deposit" } }]}
         description={`Made to measure from ${m.from}: ${m.deposit} deposit, ${m.fittings} fittings, usually ${m.weeks}. Walk in to 84 Mitcham Road, Tooting.`} />
-      <section className="bg-ink text-paper">
-        <div className="wrap grid items-center gap-8 py-10 sm:py-14 lg:grid-cols-[1.1fr_1fr] lg:gap-14">
+
+      {/* The title and the fitting line share one Ochre ground: the tape is the page. */}
+      <section className="on-dark overflow-x-clip bg-ink text-paper">
+        <div className="wrap grid gap-x-14 gap-y-8 pb-10 pt-10 sm:pt-14 md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] md:items-end">
           <div className="flex flex-col gap-5">
-            <p className="label text-sage">Made to measure</p>
-            <h1 className="text-[42px] text-paper sm:text-[60px]">Cut for you, in Tooting.</h1>
-            <p className="max-w-xl text-[18px] text-on-ink">Choose the cloth and the details. We measure you, fit it twice, and you collect a suit that was made for nobody else.</p>
-            <MtmFacts dark />
+            <h1 className="t-hero">Cut for you, in Tooting.</h1>
+            <p className="t-lede measure text-on-ink">Choose the cloth and the details. We measure you, fit it twice, and you collect a suit that was made for nobody else.</p>
           </div>
-          <img src={img("looks/fitting")} alt="A tailor's hands pinning the back seam of a grey jacket" width="1100" height="1366" className="aspect-[16/10] w-full rounded-pill object-cover object-[50%_6%]" />
+          <img src={img("looks/fitting")} alt="A tailor's hands pinning the back seam of a grey jacket" width="1100" height="1366" className="hidden aspect-[4/3] w-full rounded-pill object-cover object-[50%_18%] md:block" />
+        </div>
+        <div className="wrap pb-14 pt-4 sm:pb-20">
+          <h2 className="sr-only">How it works</h2>
+          <FittingLine />
         </div>
       </section>
 
-      <section className="wrap grid gap-10 py-14 sm:py-16 lg:grid-cols-[1fr_1.6fr]">
-        <h2 className="text-[32px] sm:text-[40px]">How it works</h2>
-        <dl className="border-t border-ink">
-          {steps.map(([k, v]) => (
-            <div key={k} className="grid gap-1 border-b border-line py-5 sm:grid-cols-[180px_1fr] sm:gap-8">
-              <dt className="display text-[24px]">{k}</dt><dd className="text-[17px] text-mute">{v}</dd>
-            </div>
-          ))}
-        </dl>
-      </section>
-
-      <section className="bg-sage py-14 sm:py-16">
-        <div className="wrap grid min-w-0 items-center gap-10 lg:grid-cols-[1fr_1.2fr]">
-          <img src={img("products/swatches")} alt="Suiting cloth swatches fanned on linen beside a wooden rule" loading="lazy" width="1100" height="1366" className="aspect-[4/3] w-full rounded-pill object-cover" />
+      <section className="bg-sage">
+        <div className="wrap grid items-center gap-x-14 gap-y-8 py-14 sm:py-20 md:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
+          <img src={img("products/swatches")} alt="Suiting cloth swatches fanned on linen beside a wooden rule" loading="lazy" width="1100" height="1366" className="aspect-[4/3] w-full rounded-pill object-cover md:aspect-[5/4]" />
           <div className="flex min-w-0 flex-col gap-4">
-            <h2 className="text-[32px] sm:text-[40px]">Prices from {m.from}.</h2>
-            <p className="text-[17px]">The price is agreed at your first visit, and {m.deposit} is paid as a deposit before we start.</p>
-            <p className="text-base text-mute">[CLOTH PRICE LIST TO COME]</p>
+            <h2>Prices from {m.from}.</h2>
+            <p className="t-lede measure">The price is agreed at your first visit, and {m.deposit} is paid as a deposit before we start.</p>
+            <p className="text-mute">[CLOTH PRICE LIST TO COME]</p>
           </div>
         </div>
       </section>
 
-      <section className="wrap grid gap-8 py-14 sm:py-16 lg:grid-cols-[1.2fr_1fr] lg:items-end">
+      <section className="wrap grid gap-x-14 gap-y-6 pt-14 sm:pt-20 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:items-end">
         <div className="flex flex-col gap-3">
-          <h2 className="text-[32px] sm:text-[40px]">No appointment needed.</h2>
-          <p className="max-w-xl text-[17px]">Walk in any day, {SITE.hours.replace("Monday to Sunday, ", "")}. If you'd like a fitter ready for you, call ahead on {tel}.</p>
-          <p className="text-base text-mute">{SITE.address.street}, {SITE.address.area}, {SITE.address.city} {SITE.address.postcode}</p>
+          <h2>No appointment needed.</h2>
+          <p className="t-lede measure">Walk in any day, {SITE.hours.replace("Monday to Sunday, ", "")}. If you'd like a fitter ready for you, call ahead on {tel}.</p>
+          <p className="text-mute">{SITE.address.street}, {SITE.address.area}, {SITE.address.city} {SITE.address.postcode}</p>
         </div>
         <div className="flex flex-wrap gap-3 lg:justify-end"><a href={`tel:${SITE.phoneIntl}`} className="btn btn-ink">Call ahead</a><Link to="/visit" className="btn btn-ghost">Find the shop</Link></div>
       </section>
@@ -101,26 +93,27 @@ export function Alterations() {
     <>
       <Seo title="Alterations in Tooting" path="/alterations" jsonLd={[crumbs("Alterations", "/alterations"), { "@context": "https://schema.org", "@type": "Service", name: "Clothing alterations", provider: { "@id": `${SITE.url}/#store` }, areaServed: "London" }]}
         description={`Hems, sleeves, waists and dresses altered in the shop at ${SITE.address.street}, Tooting. Walk in, ${SITE.hours}.`} />
-      <section className="wrap grid gap-10 py-10 sm:py-14 lg:grid-cols-[1fr_1.2fr] lg:gap-16">
-        <div className="flex flex-col gap-5">
-          <p className="label text-mute">In the shop</p>
-          <h1 className="text-[42px] sm:text-[56px]">Alterations</h1>
-          <p className="max-w-lg text-[18px]">Taken up, let out and made to fit: hems, sleeves, waists and dresses, done at {SITE.address.street}.</p>
-          <p className="max-w-lg text-[17px] text-mute">Bring it in any day, {SITE.hours.replace("Monday to Sunday, ", "")}, or call {tel} to ask about a job first.</p>
+      <section className="wrap grid gap-x-14 gap-y-10 pt-10 sm:pt-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
+        <div className="flex flex-col gap-4">
+          <h1>Alterations</h1>
+          <TitleTape />
+          <p className="t-lede measure pt-1">Taken up, let out and made to fit: hems, sleeves, waists and dresses, done at {SITE.address.street}.</p>
+          <p className="measure text-mute">Bring it in any day, {SITE.hours.replace("Monday to Sunday, ", "")}, or call {tel} to ask about a job first.</p>
+          <a href={`tel:${SITE.phoneIntl}`} className="btn btn-ink mt-2 self-start">Call {SITE.phone}</a>
         </div>
-        <div className="flex flex-col gap-3">
-          <table className="w-full text-left text-base">
-            <caption className="mb-3 text-left"><span className="display block text-[28px]">Price list to come</span><span className="text-[14px] text-mute">The rows show the kind of job; the shop's own list replaces them.</span></caption>
-            <thead><tr className="border-b border-ink"><th className="label py-3 font-normal">Alteration</th><th className="label py-3 text-right font-normal">Price</th></tr></thead>
+        <div className="flex flex-col gap-3 lg:pt-3">
+          <table className="w-full text-left">
+            <caption className="mb-2 text-left"><span className="t-sub block">Price list to come</span><span className="text-mute">The rows show the kind of job; the shop's own list replaces them.</span></caption>
+            <thead><tr className="border-b border-ink"><th className={th}>Alteration</th><th className={`${th} text-right`}>Price</th></tr></thead>
             <tbody>{ALTERATIONS.map((a) => <tr key={a} className="border-b border-line"><td className="py-3.5">{a}</td><td className="py-3.5 text-right text-mute">£[PRICE]</td></tr>)}</tbody>
           </table>
-          <p className="text-[14px] text-mute">[USUAL TURNAROUND]</p>
+          <p className="text-mute">[USUAL TURNAROUND]</p>
         </div>
       </section>
-      <section className="wrap">
-        <div className="flex flex-col gap-4 rounded-pill bg-sage p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
-          <div><h2 className="text-[28px] sm:text-[32px]">Want it made for you instead?</h2><p className="text-base">Made to measure from {SITE.madeToMeasure.from}, with {SITE.madeToMeasure.fittings} fittings.</p></div>
-          <Link to="/made-to-measure" className="btn btn-ink shrink-0">Made to measure</Link>
+      <section className="mt-16 bg-sage">
+        <div className="wrap grid gap-x-14 gap-y-4 py-12 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:items-end">
+          <div className="flex flex-col gap-2"><h2>Want it made for you instead?</h2><p className="t-lede">Made to measure from {SITE.madeToMeasure.from}, with {SITE.madeToMeasure.fittings} fittings.</p></div>
+          <Link to="/made-to-measure" className="btn btn-ink self-start lg:justify-self-end">See how made to measure works</Link>
         </div>
       </section>
     </>
@@ -133,28 +126,25 @@ export function Visit() {
     <>
       <Seo title="Visit the shop in Tooting" path="/visit" jsonLd={crumbs("Visit", "/visit")} description={`Walk in to be measured, try on or drop off alterations at ${SITE.address.street}, ${SITE.address.city} ${SITE.address.postcode}. Open ${SITE.hours}. Phone ${SITE.phone}.`} />
       <section className="bg-sage">
-        <div className="wrap grid gap-8 py-10 sm:py-14 lg:grid-cols-[1fr_1.15fr] lg:items-center lg:gap-14">
-          <div className="flex flex-col gap-5">
-            <p className="label">Visit · {SITE.address.area}</p>
-            <h1 className="text-[42px] sm:text-[60px]">Just walk in.</h1>
-            <p className="max-w-lg text-[18px]">No appointment needed to be measured, try something on or drop off alterations.</p>
-            <dl className="grid gap-4 border-t border-ink pt-5 text-[17px] sm:grid-cols-2">
-              <div><dt className="label mb-1">Address</dt><dd>{SITE.address.street}<br />{SITE.address.area}, {SITE.address.city}<br />{SITE.address.postcode}</dd></div>
-              <div><dt className="label mb-1">Open</dt><dd>Monday to Sunday<br />9am to 6pm</dd></div>
-              <div><dt className="label mb-1">Phone</dt><dd>{tel}</dd></div>
-              <div><dt className="label mb-1">Map</dt><dd><a href={maps} className="underline">Open in Google Maps</a></dd></div>
-            </dl>
+        <div className="wrap grid gap-x-14 gap-y-8 py-10 sm:py-14 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:items-center lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
+          <div className="flex flex-col gap-4">
+            <h1 className="t-hero">Just walk in.</h1>
+            <TitleTape />
+            <p className="t-lede measure pt-1">No appointment needed to be measured, try something on or drop off alterations.</p>
+            <address className="t-sub not-italic">{SITE.address.street}<br />{SITE.address.area}, {SITE.address.city} {SITE.address.postcode}</address>
+            <p>Open Monday to Sunday, 9am to 6pm.<br />Phone {tel}</p>
+            <div className="flex flex-wrap gap-3 pt-1"><a href={maps} className="btn btn-ink">Open in Google Maps</a><a href={`tel:${SITE.phoneIntl}`} className="btn btn-ghost">Call the shop</a></div>
           </div>
-          <PhotoSlot art="shopfront" tone="ink" label="The shop front" line="84 Mitcham Road, seen from across the street." className="aspect-[4/3]" />
+          <PhotoSlot art="shopfront" tone="ink" label="The shop front" line="84 Mitcham Road, seen from across the street." className="aspect-[4/3] md:aspect-[4/5] lg:aspect-[4/3]" />
         </div>
       </section>
-      <section className="wrap grid gap-6 py-14 md:grid-cols-[1.4fr_1fr]">
+      <section className="wrap grid gap-x-14 gap-y-6 pt-14 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
         <div className="flex flex-col gap-3">
-          <h2 className="text-[30px] sm:text-[36px]">Coming for made to measure?</h2>
-          <p className="text-[17px]">You can still walk in. If you'd like a fitter free when you arrive, call ahead on {tel}.</p>
+          <h2>Coming for made to measure?</h2>
+          <p className="t-lede measure">You can still walk in. If you'd like a fitter free when you arrive, call ahead on {tel}.</p>
         </div>
         <ul className="flex flex-col border-t border-ink">
-          {[["/made-to-measure", "Made to measure"], ["/alterations", "Alterations"], ["/delivery-returns", "Click and collect"]].map(([to, t]) => <li key={to} className="border-b border-line"><Link to={to} className="flex min-h-12 items-center justify-between text-[17px] hover:underline">{t}<span aria-hidden="true">→</span></Link></li>)}
+          {[["/made-to-measure", "Made to measure"], ["/alterations", "Alterations"], ["/delivery-returns", "Click and collect"]].map(([to, t]) => <li key={to} className="border-b border-line"><Link to={to} className="t-sub flex min-h-14 items-center underline decoration-transparent decoration-1 underline-offset-[0.3em] hover:decoration-current">{t}</Link></li>)}
         </ul>
       </section>
     </>
@@ -166,27 +156,28 @@ export function DeliveryReturns() {
   return (
     <>
       <Seo title="Delivery and returns" path="/delivery-returns" jsonLd={crumbs("Delivery and returns", "/delivery-returns")} description={`Standard delivery ${d.standard.price} (${d.standard.time}), express ${d.express.price} (${d.express.time}), free on orders of ${d.freeOver} and over, click and collect in Tooting. ${r.days}-day returns.`} />
-      <section className="wrap flex max-w-3xl flex-col gap-10 py-10 sm:py-14">
-        <div className="flex flex-col gap-4">
-          <h1 className="text-[42px] sm:text-[56px]">Delivery and returns</h1>
-          <p className="text-[18px]">Free delivery on orders of {d.freeOver} and over, or collect from the shop in Tooting.</p>
-        </div>
+      <section className="wrap flex flex-col gap-4 pb-10 pt-10 sm:pt-14">
+        <h1>Delivery and returns</h1>
+        <TitleTape />
+        <p className="t-lede measure pt-1">Free delivery on orders of {d.freeOver} and over, or collect from the shop in Tooting.</p>
+      </section>
+      <section className="wrap grid gap-x-14 gap-y-12 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]">
         <div className="flex flex-col gap-3">
-          <h2 className="text-[30px]">Delivery</h2>
-          <table className="w-full text-left text-base">
-            <thead><tr className="border-b border-ink"><th className="label py-3 font-normal">Option</th><th className="label py-3 font-normal">Price</th><th className="label py-3 font-normal">Arrives</th></tr></thead>
+          <h2>Delivery</h2>
+          <table className="w-full text-left">
+            <thead><tr className="border-b border-ink"><th className={th}>Option</th><th className={th}>Price</th><th className={th}>Arrives</th></tr></thead>
             <tbody>
               {[[d.standard.name, d.standard.price, d.standard.time], [d.express.name, d.express.price, d.express.time]].map(([a, b, c]) => <tr key={a} className="border-b border-line"><td className="py-3.5 pr-3">{a}</td><td className="py-3.5 pr-3">{b}</td><td className="py-3.5 text-mute">{c}</td></tr>)}
             </tbody>
           </table>
-          <p className="text-[17px]">Free delivery on orders of {d.freeOver} and over.</p>
-          <p className="text-[17px]">{d.collect}, open {SITE.hours}.</p>
+          <p>Free delivery on orders of {d.freeOver} and over.</p>
+          <p>{d.collect}, open {SITE.hours}.</p>
         </div>
-        <div className="flex flex-col gap-3">
-          <h2 className="text-[30px]">Returns</h2>
-          <p className="text-[17px]">You have {r.days} days to return an item.</p>
-          <p className="rounded-pill bg-stone px-4 py-3 text-[17px]"><b>Not returnable:</b> {r.excluded.join(", ").replace(/, ([^,]*)$/, " and $1")}. Please try these on in the shop before you buy.</p>
-          <p className="text-base text-mute">[HOW TO SEND A RETURN AND WHEN REFUNDS ARE MADE]</p>
+        <div className="flex flex-col gap-3 lg:border-l lg:border-ink lg:pl-14">
+          <h2>Returns</h2>
+          <p className="t-lede">You have {r.days} days to return an item.</p>
+          <p><b>Not returnable:</b> {r.excluded.join(", ").replace(/, ([^,]*)$/, " and $1")}. Please try these on in the shop before you buy.</p>
+          <p className="text-mute">[HOW TO SEND A RETURN AND WHEN REFUNDS ARE MADE]</p>
         </div>
       </section>
     </>
