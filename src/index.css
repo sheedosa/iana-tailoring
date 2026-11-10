@@ -1,123 +1,156 @@
 @import "tailwindcss";
 
-/* I & A Formal, v3. Ochre, Sage and warm white from the I&A guide 2022 (Formal variant: no pink).
-   Caslon is the voice: Libre Caslon Display for the hero, page titles and section titles (one weight, size carries
-   the hierarchy), Libre Caslon Text for sub-heads and the italic second voice, Hanken Grotesk for text and controls.
-   The one motif is the tailor's tape (.tape): the fitting line, the size ruler, a short length under page titles
-   and the footer divider. Corners 3px. */
+/* I & A Formal, v4: a tailor's catalogue. Bottle green and Sage on Chalk, one Brass rule.
+   Caslon throughout (Display for titles, Text for reading); Hanken Grotesk only for sizes, prices and fields.
+   Everything is centred. Corners are square. Titles sit between double rules; pictures sit in a frame with a mount.
+   The tape appears once: the fitting line. */
 @theme {
   --font-display: "Libre Caslon Display", "Libre Caslon Text", Georgia, serif;
   --font-serif: "Libre Caslon Text", Georgia, serif;
   --font-sans: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
-  --color-ink: #45353a;        /* Ochre */
-  --color-ink-soft: #5e4b51;
-  --color-mute: #665459;       /* secondary text, AA on paper and sage */
-  --color-paper: #fbfbf9;      /* warm white ground */
-  --color-deep: #2a2326;       /* footer, strip */
-  --color-sage: #d8e2dc;
-  --color-stone: #e9e4e5;
-  --color-line: #e2dcdd;
-  --color-on-ink: #ece3e6;     /* body text on Ochre */
-  --radius-pill: 3px;
+  --color-green: #1f322b;       /* header, footer, the fitting line, the main button */
+  --color-green-deep: #15231e;
+  --color-sage: #d8e2dc;        /* the ground inside a frame, quiet bands */
+  --color-chalk: #f7f6f1;       /* reading ground */
+  --color-mount: #fdfcf9;       /* the mount inside a frame */
+  --color-brass: #a8843f;       /* one rule and the size marker; never small text */
+  --color-ink: #45353a;         /* text on light */
+  --color-mute: #665459;        /* secondary text, AA on chalk and sage */
+  --color-hair: #cbc6bd;        /* single hairlines between plates and rows */
+  --color-on-green: #dde6e0;    /* text on green */
+  --color-rule-green: #8fa59b;  /* rules on green */
 }
 
 :root {
-  /* One fluid scale. Pages never set a heading size. */
-  --t-hero: clamp(2.75rem, 1.5rem + 5.4vw, 6.25rem);
-  --t-title: clamp(2.5rem, 1.55rem + 3.7vw, 4.75rem);
-  --t-section: clamp(1.875rem, 1.42rem + 1.75vw, 3rem);
-  --t-sub: clamp(1.25rem, 1.16rem + 0.4vw, 1.5rem);
-  --t-lede: clamp(1.0625rem, 1rem + 0.32vw, 1.25rem);
-  --t-body: clamp(1rem, 0.97rem + 0.14vw, 1.0625rem);
-  --t-small: 0.875rem;
-  --ease-out: cubic-bezier(.16, 1, .3, 1);
-  --dur-1: 160ms;
-  --dur-2: 420ms;
-  --dur-3: 760ms;
+  --t-hero: clamp(2.125rem, 1.35rem + 3.3vw, 4.25rem);
+  --t-title: clamp(2rem, 1.4rem + 2.6vw, 3.625rem);
+  --t-section: clamp(1.625rem, 1.3rem + 1.4vw, 2.5rem);
+  --t-plate: clamp(1.5rem, 1.3rem + 0.85vw, 2rem);
+  --t-sub: 1.25rem;
+  --t-lede: clamp(1.125rem, 1.08rem + 0.2vw, 1.25rem);
+  --t-body: 1.0625rem;
+  --t-small: 0.9375rem;
+  --ease-out: cubic-bezier(.2, .7, .2, 1);
+  --dur-1: 140ms;
+  --dur-2: 380ms;
+  --dur-3: 700ms;
 }
 
 @layer base {
-  html { scroll-behavior: smooth; }
-  body { @apply bg-paper text-ink font-sans antialiased; font-size: var(--t-body); font-weight: 400; line-height: 1.55; }
-  strong, b { font-weight: 600; }
+  body { @apply bg-chalk text-ink font-serif antialiased; font-size: var(--t-body); font-weight: 400; line-height: 1.6; text-align: center; }
+  strong, b { font-weight: 700; }
   h1, h2, .display { font-family: var(--font-display); font-weight: 400; text-wrap: balance; }
-  h1 { font-size: var(--t-title); line-height: 1.02; letter-spacing: -0.012em; }
-  h2 { font-size: var(--t-section); line-height: 1.08; letter-spacing: -0.006em; }
-  h3 { font-family: var(--font-serif); font-weight: 400; font-size: var(--t-sub); line-height: 1.25; text-wrap: balance; }
+  h1 { font-size: var(--t-title); line-height: 1.08; }
+  h2 { font-size: var(--t-section); line-height: 1.12; }
+  h3 { font-family: var(--font-serif); font-weight: 700; font-size: var(--t-sub); line-height: 1.3; text-wrap: balance; }
   p { text-wrap: pretty; }
-  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 2px; }
-  .on-dark :focus-visible { outline-color: var(--color-paper); }
-  summary { list-style: none; }
-  summary::-webkit-details-marker { display: none; }
-  input { font-size: 1rem; }
+  a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--color-green); outline-offset: 2px; }
+  .on-green :focus-visible { outline-color: var(--color-chalk); }
+  input { font-size: 1.0625rem; }
+  address { font-style: normal; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
   * { transition: none !important; animation: none !important; }
   ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
 }
-::view-transition-group(*) { animation-duration: 520ms; animation-timing-function: cubic-bezier(.16, 1, .3, 1); }
-::view-transition-old(root), ::view-transition-new(root) { animation-duration: 260ms; }
+::view-transition-group(*) { animation-duration: 460ms; animation-timing-function: cubic-bezier(.2, .7, .2, 1); }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 220ms; }
 
 @layer components {
-  .wrap { @apply mx-auto w-full max-w-[1320px] px-4 sm:px-8; }
+  .wrap { @apply mx-auto w-full max-w-[72rem] px-4 sm:px-8; }
+  .col { @apply mx-auto flex w-full max-w-[38rem] flex-col items-center; }
 
-  /* Type steps */
-  .t-hero { font-size: var(--t-hero); line-height: 0.98; letter-spacing: -0.018em; }
-  .t-title { font-size: var(--t-title); line-height: 1.02; letter-spacing: -0.012em; }
-  .t-section { font-size: var(--t-section); line-height: 1.08; letter-spacing: -0.006em; }
-  .t-sub { font-family: var(--font-serif); font-weight: 400; font-size: var(--t-sub); line-height: 1.25; letter-spacing: 0; }
-  .t-lede { font-size: var(--t-lede); line-height: 1.5; }
+  .t-hero { font-size: var(--t-hero); line-height: 1.06; }
+  .t-section { font-size: var(--t-section); line-height: 1.12; }
+  .t-plate { font-size: var(--t-plate); line-height: 1.15; }
+  .t-lede { font-size: var(--t-lede); line-height: 1.55; }
   .t-small { font-size: var(--t-small); line-height: 1.5; }
-  .t-figure { font-family: var(--font-display); font-size: clamp(3rem, 2.2rem + 3.4vw, 5.5rem); line-height: 0.95; letter-spacing: -0.02em; font-variant-numeric: lining-nums; }
-  /* The second voice: Caslon Text italic, one short line under a title or a name. */
-  .voice { font-family: var(--font-serif); font-style: italic; font-weight: 400; font-size: clamp(1.125rem, 1.06rem + 0.3vw, 1.3125rem); line-height: 1.4; }
-  /* Caps labels: controls, table heads and footer headings only. Always the sans face. */
-  .label { font-family: var(--font-sans); text-transform: uppercase; letter-spacing: 0.15em; font-weight: 500; font-size: 0.75rem; line-height: 1.4; }
-  .measure { max-width: 34rem; }
+  /* Sizes, prices and fields: the only sans on the site. */
+  .num { font-family: var(--font-sans); font-variant-numeric: tabular-nums lining-nums; }
 
-  .btn { @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-pill px-6 text-center text-base font-semibold; transition: background-color var(--dur-1) ease, color var(--dur-1) ease; }
-  .btn-ink { @apply bg-ink text-paper hover:bg-deep; }
-  .btn-paper { @apply bg-paper text-ink hover:bg-sage; }
-  .btn-outline-paper { @apply border border-paper bg-transparent text-paper hover:bg-paper hover:text-ink; }
-  .btn-ghost { @apply border border-ink bg-transparent text-ink hover:bg-ink hover:text-paper; }
-  .link { @apply inline-flex min-h-11 items-center font-semibold underline underline-offset-4; text-decoration-thickness: 1px; }
+  /* Two hairlines, three pixels apart: above and below every title. */
+  .rule2 { display: block; width: 100%; height: 5px; border-block: 1px solid var(--color-ink); }
+  .on-green .rule2 { border-color: var(--color-rule-green); }
+  .rule1 { display: block; width: 100%; height: 0; border-top: 1px solid var(--color-hair); }
+
+  /* A picture in its frame: one line, a mount, then the picture. */
+  .frame { display: block; border: 1px solid var(--color-ink); padding: 12px; background: var(--color-mount); }
+  .frame > * { display: block; width: 100%; }
+  .on-green .frame { border-color: var(--color-rule-green); background: transparent; }
+
+  .btn { @apply inline-flex min-h-12 items-center justify-center px-7 text-center; font-size: 1.0625rem; background: var(--color-green); color: var(--color-chalk); border: 1px solid var(--color-green); transition: background-color var(--dur-1) ease; }
+  .btn:hover { background: var(--color-green-deep); }
+  .btn-line { background: transparent; color: var(--color-green); }
+  .btn-line:hover { background: var(--color-sage); }
+  .on-green .btn { background: var(--color-chalk); color: var(--color-green); border-color: var(--color-chalk); }
+  .on-green .btn:hover { background: var(--color-sage); }
+  .link { @apply inline-flex min-h-11 items-center underline underline-offset-4; text-decoration-thickness: 1px; }
   .link:hover { text-decoration-thickness: 2px; }
-  .chip { @apply inline-flex min-h-11 items-center rounded-pill border border-ink px-4 text-base whitespace-nowrap; }
-  .chip[aria-pressed="true"], .chip[aria-current="page"] { @apply bg-ink text-paper; }
-  .pick { @apply inline-flex h-11 min-w-11 items-center justify-center rounded-pill border border-ink px-2 text-base hover:bg-sage; font-variant-numeric: tabular-nums; }
-  .pick[aria-pressed="true"] { @apply bg-ink text-paper hover:bg-ink; }
-  .pick:disabled { @apply cursor-not-allowed border-line text-mute line-through hover:bg-transparent; }
-  .chev { @apply ml-auto shrink-0; transition: transform var(--dur-1) ease; }
-  details[open] > summary .chev { transform: rotate(180deg); }
-  .field { @apply h-12 w-full min-w-0 rounded-pill border border-ink bg-paper px-3 text-base; }
+  .inl { @apply underline underline-offset-4; text-decoration-thickness: 1px; }
+  /* A text toggle: no box, a rule under the one that is on. */
+  .opt { @apply inline-flex min-h-11 min-w-11 items-center justify-center px-1; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+  .opt:hover { border-bottom-color: var(--color-hair); }
+  .opt[aria-pressed="true"], .opt[aria-current="page"] { border-bottom-color: var(--color-ink); }
 
-  /* ---- The tailor's tape ------------------------------------------------------------------------
-     A strip of cells, one per inch: a long tick, quarter and half ticks, and the numeral. Drawn with
-     solid 1px bars so it stays sharp at any width. --u is the width of an inch. */
-  .tape { --u: 28px; position: relative; display: flex; height: 2.5rem; background: var(--color-paper); color: var(--color-ink);
-    border-block: 1px solid var(--color-ink); font: 600 0.6875rem/1 var(--font-sans); font-variant-numeric: tabular-nums; overflow: hidden; }
+  /* A specification: terms to the left of the centre line, values to the right. */
+  .spec { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); width: 100%; text-align: left; }
+  .spec > dt, .spec > dd { padding: 0.5rem 0; border-top: 1px solid var(--color-hair); }
+  .spec > dt { text-align: right; padding-right: 0.75rem; color: var(--color-mute); }
+  .spec > dd { padding-left: 0.75rem; }
+  .spec > dt:last-of-type, .spec > dd:last-of-type { border-bottom: 1px solid var(--color-hair); }
+  .spec-even { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+
+  /* A plate: the framed picture on one side, its specification on the other. */
+  .plate { display: grid; gap: 1.5rem; padding-block: 2.5rem; align-items: center; justify-items: center; }
+  .plate-pic { width: min(100%, 17rem); }
+  .plate-spec { display: flex; width: 100%; max-width: 27rem; flex-direction: column; align-items: center; gap: 0.75rem; }
+  @media (min-width: 48rem) {
+    .plate { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 3rem; padding-block: 3rem; }
+    .plate-pic { width: min(100%, 19rem); }
+    .plate-flip .plate-pic { order: 2; }
+  }
+
+  /* The size matrix: what can be chosen. Across on wide screens; turned on its side on phones so every key is 44px. */
+  .matrix { display: grid; justify-content: center; font-family: var(--font-sans); font-variant-numeric: tabular-nums; font-size: 0.9375rem;
+    grid-auto-flow: column; grid-template-rows: repeat(calc(var(--c) + 1), auto); grid-template-columns: 4.25rem repeat(var(--r), minmax(0, 5.25rem)); }
+  .mx-head, .mx-row { display: flex; min-height: 2.75rem; align-items: center; justify-content: center; color: var(--color-mute); padding-inline: 0.5rem; }
+  .mx-row { font-family: var(--font-serif); font-size: var(--t-small); }
+  .mx-cell { position: relative; display: flex; min-height: 2.75rem; min-width: 2.75rem; align-items: center; justify-content: center; border: 1px solid var(--color-hair); margin: 0 -1px -1px 0; background: var(--color-mount); color: var(--color-ink); }
+  .mx-cell:hover { background: var(--color-sage); }
+  .mx-cell[aria-pressed="true"] { background: var(--color-green); color: var(--color-chalk); border-color: var(--color-green); box-shadow: inset 0 -4px 0 var(--color-brass); z-index: 1; font-weight: 600; }
+  .mx-mine { position: absolute; top: 5px; right: 5px; width: 8px; height: 8px; background: var(--color-brass); transform: rotate(45deg); }
+  @media (min-width: 40rem) {
+    .matrix { grid-auto-flow: row; grid-template-rows: none; grid-template-columns: 5.5rem repeat(var(--c), minmax(2.75rem, 3.5rem)); }
+    .mx-row { justify-content: flex-end; padding-right: 0.875rem; }
+  }
+  .keys { display: flex; flex-wrap: wrap; justify-content: center; padding: 0 0 1px 1px; }
+  .keys .mx-cell { min-width: 3rem; padding-inline: 0.5rem; font-family: var(--font-sans); font-variant-numeric: tabular-nums; font-size: 0.9375rem; }
+
+  /* Plain ruled inputs. */
+  .field { height: 3rem; width: 100%; min-width: 0; border: 0; border-bottom: 1px solid var(--color-ink); background: transparent; text-align: center; font-family: var(--font-sans); border-radius: 0; }
+  .field[aria-invalid="true"] { border-bottom-width: 3px; }
+  .field::placeholder { color: #746569; }
+
+  /* Ruled tables, centred. */
+  .table { width: 100%; border-collapse: collapse; }
+  .table th { font-weight: 700; padding: 0.625rem 0.5rem; border-bottom: 1px solid var(--color-ink); }
+  .table td { padding: 0.75rem 0.5rem; border-bottom: 1px solid var(--color-hair); }
+
+  /* ---- The tailor's tape: the fitting line only -----------------------------------------------
+     A strip of cells, one per inch: a long tick, quarter and half ticks, and the numeral. */
+  .tape { --u: 28px; position: relative; display: flex; height: 3rem; background: var(--color-chalk); color: var(--color-ink);
+    font: 600 0.6875rem/1 var(--font-sans); font-variant-numeric: tabular-nums; overflow: hidden; text-align: left; }
   .tape > i { position: relative; flex: 0 0 var(--u); font-style: normal;
     background:
-      linear-gradient(currentColor, currentColor) 0 0 / 1px 1.05rem no-repeat,
-      linear-gradient(currentColor, currentColor) 25% 0 / 1px 0.4rem no-repeat,
-      linear-gradient(currentColor, currentColor) 50% 0 / 1px 0.7rem no-repeat,
-      linear-gradient(currentColor, currentColor) 75% 0 / 1px 0.4rem no-repeat; }
-  .tape > i::after { content: attr(data-n); position: absolute; left: 4px; bottom: 0.3rem; }
-  /* The brass end. */
-  .tape-end { flex: 0 0 0.875rem; background: var(--color-deep); border-right: 1px solid var(--color-ink); position: relative; }
-  .tape-end::after { content: ""; position: absolute; left: 50%; top: 50%; width: 5px; height: 5px; margin: -2.5px; border-radius: 50%; background: var(--color-sage); }
-  .on-dark .tape, .tape.on-dark { border-block-color: var(--color-paper); }
-  .on-dark .tape-end { background: var(--color-sage); }
-  .on-dark .tape-end::after { background: var(--color-deep); }
-  /* The length measured so far, and the clip that marks the place. */
+      linear-gradient(currentColor, currentColor) 0 0 / 1px 1.2rem no-repeat,
+      linear-gradient(currentColor, currentColor) 25% 0 / 1px 0.45rem no-repeat,
+      linear-gradient(currentColor, currentColor) 50% 0 / 1px 0.8rem no-repeat,
+      linear-gradient(currentColor, currentColor) 75% 0 / 1px 0.45rem no-repeat; }
+  .tape > i::after { content: attr(data-n); position: absolute; left: 4px; bottom: 0.35rem; }
   .tape-fill { position: absolute; inset-block: 0; left: 0; background: var(--color-sage); transition: width var(--dur-2) var(--ease-out), height var(--dur-2) var(--ease-out); }
-  .tape-clip { position: absolute; top: -0.375rem; bottom: -0.375rem; width: 3px; margin-left: -1px; background: currentColor; transition: left var(--dur-2) var(--ease-out), top var(--dur-2) var(--ease-out); }
-  .tape-clip::before { content: ""; position: absolute; left: 50%; top: -1px; width: 0.75rem; height: 0.75rem; margin-left: -0.375rem; background: currentColor; clip-path: polygon(0 0, 100% 0, 50% 100%); }
-
-  /* Vertical tape (phones): ticks come in from the right edge. */
-  .tape-v { flex-direction: column; height: auto; width: 2.5rem; border-block: 0; border-inline: 1px solid var(--color-ink); }
+  .tape-clip { position: absolute; top: -0.5rem; bottom: -0.5rem; width: 3px; margin-left: -1px; background: var(--color-brass); transition: left var(--dur-2) var(--ease-out); }
+  .tape-v { flex-direction: column; height: auto; width: 2.5rem; }
   .tape-v > i {
     background:
       linear-gradient(currentColor, currentColor) 100% 0 / 1.05rem 1px no-repeat,
@@ -125,37 +158,29 @@
       linear-gradient(currentColor, currentColor) 100% 50% / 0.7rem 1px no-repeat,
       linear-gradient(currentColor, currentColor) 100% 75% / 0.4rem 1px no-repeat; }
   .tape-v > i::after { left: 0.3rem; top: 5px; bottom: auto; }
-  .tape-v .tape-end { border-right: 0; border-bottom: 1px solid var(--color-ink); }
-  .on-dark .tape-v { border-inline-color: var(--color-paper); }
   .tape-v .tape-fill { inset-block: auto; top: 0; inset-inline: 0; }
 
-  /* The fitting line: the tape runs from the page margin off the right edge; five stages sit on it. */
+  /* Five stages across sixty inches; each stage sits over the middle of its twelve. */
   .fit { container-type: inline-size; --tape-n: 30; }
   @media (min-width: 64rem) { .fit { --tape-n: 60; } }
-  .fit-track { position: relative; touch-action: pan-y; cursor: pointer; color: var(--color-paper); }
-  .fit-track .tape { width: 100vw; height: 3rem; }
+  .fit-track { position: relative; touch-action: pan-y; cursor: pointer; }
   .fit-track .tape > i { flex-basis: calc(100cqw / var(--tape-n)); }
-  .fit-end { position: absolute; right: 100%; top: 0; bottom: 0; width: 0.875rem; border-right: 0; }
-  .fit-track .tape-fill { width: calc(var(--sel) * 20cqw); }
-  .fit-track .tape-clip { left: calc(var(--sel) * 20cqw); }
-  .fit-stage { position: relative; display: flex; width: 100%; flex-direction: column; gap: 0.125rem; padding: 0 0.75rem 1.25rem 0.875rem; text-align: left; min-height: 2.75rem; height: 100%; }
-  .fit-stage::before { content: ""; position: absolute; left: 0; top: 0.3rem; bottom: 0; width: 1px; background: currentColor; opacity: .55; }
-  .fit-stage[aria-pressed="true"]::before { opacity: 1; }
-  .fit-stage .t-sub { font-size: clamp(1rem, 0.4rem + 1.3cqw, 1.5rem); text-decoration: underline transparent; text-underline-offset: 0.3em; text-decoration-thickness: 1px; transition: text-decoration-color var(--dur-1) ease; }
-  .fit-stage:hover .t-sub, .fit-stage[aria-pressed="true"] .t-sub { text-decoration-color: currentColor; }
-  .fit-row { position: relative; padding-left: 1.125rem; }
+  .fit-track .tape-fill { width: calc((var(--sel) + 0.5) * 20cqw); }
+  .fit-track .tape-clip { left: calc((var(--sel) + 0.5) * 20cqw); }
+  .fit-stage { display: flex; width: 100%; height: 100%; min-height: 2.75rem; flex-direction: column; align-items: center; gap: 0.125rem; padding: 0 0.5rem 1.25rem; }
+  .fit-stage b { font-weight: 400; font-family: var(--font-display); font-size: clamp(1.125rem, 0.5rem + 1.5cqw, 1.625rem); line-height: 1.2; border-bottom: 1px solid transparent; }
+  .fit-stage:hover b, .fit-stage[aria-pressed="true"] b { border-bottom-color: currentColor; }
+  .fit-row { position: relative; padding-left: 1.125rem; text-align: left; }
   .fit-row::before { content: ""; position: absolute; left: 0; top: 1.4rem; width: 0.75rem; height: 1px; background: currentColor; }
 
   /* What changed, answering a choice. */
   .swap { animation: swap var(--dur-2) var(--ease-out) both; }
-  /* The one unprompted moment: the three hero panels arriving. */
-  .rise { animation: rise var(--dur-3) var(--ease-out) both; animation-delay: calc(var(--i, 0) * 90ms + 80ms); }
-  .sheet { animation: sheet var(--dur-2) var(--ease-out) both; }
+  /* The one unprompted moment: the three doors opening on Home. */
+  .rise { animation: rise var(--dur-3) var(--ease-out) both; animation-delay: calc(var(--i, 0) * 110ms + 60ms); }
 
-  .rail { @apply -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4; scrollbar-width: none; scroll-padding-inline: 1rem; }
-  .rail::-webkit-scrollbar { display: none; }
+  .navrow { display: flex; overflow-x: auto; scrollbar-width: none; }
+  .navrow::-webkit-scrollbar { display: none; }
 }
 
-@keyframes swap { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-@keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
-@keyframes sheet { from { transform: translateY(100%); } to { transform: none; } }
+@keyframes swap { from { opacity: 0; } to { opacity: 1; } }
+@keyframes rise { from { opacity: 0; clip-path: inset(0 0 100% 0); } to { opacity: 1; clip-path: inset(0); } }

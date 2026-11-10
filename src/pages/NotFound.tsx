@@ -1,15 +1,14 @@
 import { Link } from "react-router-dom";
 import { Seo } from "../components/Seo";
-import { TitleTape } from "../components/Tape";
+import { Title } from "../components/Layout";
 
 export function NotFound() {
   return (
-    <section className="wrap flex flex-col items-start gap-4 py-16 sm:py-24">
-      <Seo title="Page not found" path="/404" description="That page isn't here." noindex />
-      <h1>That page isn't here</h1>
-      <TitleTape />
-      <p className="t-lede measure pt-1">It may have moved. Start with the range, or walk in and ask.</p>
-      <div className="flex flex-wrap gap-3"><Link to="/shop/all" className="btn btn-ink">Shop the range</Link><Link to="/visit" className="btn btn-ghost">Find the shop</Link></div>
-    </section>
+    <>
+      <Seo title="Page not found" path="/404" description="That page is not in the catalogue." noindex />
+      <Title title="That page is not in the catalogue" line="It may have moved. Begin again with the departments, or come in and ask us.">
+        <div className="flex flex-wrap justify-center gap-3 pt-8"><Link to="/shop/all" className="btn">Open the catalogue</Link><Link to="/visit" className="btn btn-line">Find the shop</Link></div>
+      </Title>
+    </>
   );
 }

@@ -2,9 +2,9 @@
 // (ported from iana-schoolwear) implements the same interface, with men's jacket and trousers as separate products
 // linked by a "suit" metafield and sized by variant options (Chest + Length, Waist + Leg).
 import catalogue from "../data/catalogue.json";
-import type { Fit } from "../data/site";
+import type { Fit, Sizes } from "../data/site";
 
-export type Art = "jacket" | "waistcoat" | "gown" | "bridal" | "dress" | "jumpsuit" | "shirt" | "tie" | "trousers" | "shopfront";
+export type Art = "jacket" | "waistcoat" | "gown" | "bridal" | "dress" | "party" | "jumpsuit" | "shirt" | "tie" | "trousers" | "shopfront";
 export type Who = "men" | "women" | "kids";
 export type Product = {
   handle: string;
@@ -51,11 +51,16 @@ export const store = {
 };
 
 export const img = (path: string, small = false) => `${import.meta.env.BASE_URL}img/${path}${small ? "-sm" : ""}.webp`;
-export const cardImg = (path: string) => img(path, !path.startsWith("hero/"));
+
+/** Whether a men's suit or pair of trousers is cut in the shopper's saved jacket length and leg. Other pieces: null. */
+export const cutIn = (p: Product, s: Sizes | null): boolean | null => {
+  if (!s || (p.kind !== "suit" && p.kind !== "trousers")) return null;
+  return (p.kind !== "suit" || !p.lengths || p.lengths.includes(s.length)) && (!p.legs || p.legs.includes(s.leg));
+};
 
 const NO_RETURN: Record<NonNullable<Product["noReturn"]>, string> = {
-  suits: "Suits can't be returned",
-  bridal: "Bridal dresses can't be returned",
-  prom: "Prom dresses can't be returned",
+  suits: "Suits cannot be returned",
+  bridal: "Bridal dresses cannot be returned",
+  prom: "Prom dresses cannot be returned",
 };
 export const noReturnLine = (p: Product) => (p.noReturn ? NO_RETURN[p.noReturn] : null);

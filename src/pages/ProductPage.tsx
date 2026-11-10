@@ -1,146 +1,97 @@
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Seo, breadcrumbs, absolute } from "../components/Seo";
-import { ProductCard, priceLine } from "../components/ProductCard";
-import { StickyBar } from "../components/Tape";
-import { garmentVT } from "../components/VLink";
-import { PhotoSlot } from "../components/Art";
+import { priceLine } from "../components/Plate";
+import { Picture } from "../components/Art";
+import { VLink } from "../components/VLink";
+import { Crumbs, Heading, Title } from "../components/Layout";
 import { NotFound } from "./NotFound";
-import { img, noReturnLine, store, type Product } from "../lib/store";
+import { noReturnLine, store, type Product } from "../lib/store";
 import { useSizes } from "../lib/sizes";
 import { COLLARS, JACKET_CHESTS, JACKET_LENGTHS, KIDS_AGES, SITE, SLEEVES, TROUSER_LEGS, TROUSER_WAISTS, UK_SIZES } from "../data/site";
 
-type PickProps = { on: boolean; dead?: boolean; mine?: boolean; children: React.ReactNode; onClick: () => void; label?: string };
-const Pick = ({ on, dead, mine, children, onClick, label }: PickProps) => (
-  <button type="button" aria-pressed={on} aria-label={label} disabled={dead} onClick={onClick} className="pick relative">
-    {children}
-    {mine && <span aria-hidden="true" className={`absolute right-1 top-1 h-1.5 w-1.5 rounded-full ${on ? "bg-paper" : "bg-ink"}`} />}
-  </button>
-);
+const LEN = { S: "Short", R: "Regular", L: "Long" } as const;
 
-/** One ruled row of the fitting card: the measurement's name on the left, its sizes on the right. */
-function Row<T extends string | number>({ legend, opts, value, set, mine, dead, fmt = (v) => String(v) }:
-  { legend: string; opts: readonly T[]; value: T | null; set: (v: T) => void; mine?: T | null; dead?: (v: T) => boolean; fmt?: (v: T) => string }) {
+/** The size matrix: every size the piece can be chosen in, one key each. The brass mark is the shopper's saved size. */
+function Matrix<C extends string | number, R extends string | number>({ name, head, cols, rows, rowName, code, say, value, pick, mine }:
+  { name: string; head: string; cols: readonly C[]; rows: readonly R[]; rowName: (r: R) => string; code: (c: C, r: R) => string; say: (c: C, r: R) => string; value: string | null; pick: (v: string) => void; mine?: string | null }) {
   return (
-    <div role="group" aria-label={legend} className="card-row grid grid-cols-[3.75rem_minmax(0,1fr)] items-start gap-x-2 border-t border-line py-3">
-      <span className="label flex min-h-11 items-center" aria-hidden="true">{legend}</span>
-      <div className="flex flex-wrap gap-1">
-        {opts.map((x) => {
-          const d = dead?.(x) ?? false;
-          return <Pick key={x} on={value === x} mine={mine === x} dead={d} onClick={() => set(x)} label={`${legend} ${fmt(x)}${mine === x ? ", your size" : ""}${d ? ", out of stock" : ""}`}>{fmt(x)}</Pick>;
-        })}
-      </div>
+    <div role="group" aria-label={name} className="matrix" style={{ "--c": cols.length, "--r": rows.length } as React.CSSProperties}>
+      <span className="mx-head" aria-hidden="true">{head}</span>
+      {cols.map((c) => <span key={c} className="mx-head" aria-hidden="true">{c}</span>)}
+      {rows.map((r) => (
+        <Fragment key={r}>
+          <span className="mx-row" aria-hidden="true">{rowName(r)}</span>
+          {cols.map((c) => {
+            const v = code(c, r);
+            return <button key={v} type="button" className="mx-cell" aria-pressed={value === v} aria-label={`${say(c, r)}${mine === v ? ", your saved size" : ""}`} onClick={() => pick(v)}>{v}{mine === v && <span className="mx-mine" aria-hidden="true" />}</button>;
+          })}
+        </Fragment>
+      ))}
     </div>
   );
 }
 
-/** One piece on the card: its name, its price, and its rows. */
-const Piece = ({ name, children }: { name: string; children: React.ReactNode }) => (
-  <div className="flex flex-col px-4 pt-3 sm:px-5">
-    <div className="flex items-baseline justify-between gap-3 pb-2"><h3>{name}</h3><span>£[PRICE]</span></div>
+/** One run of sizes with nothing to cross it against: a row of keys. */
+function Keys<T extends string | number>({ name, opts, value, pick }: { name: string; opts: readonly T[]; value: string | null; pick: (v: string) => void }) {
+  return (
+    <div role="group" aria-label={name} className="flex flex-col items-center gap-2">
+      <span className="text-mute" aria-hidden="true">{name}</span>
+      <div className="keys">{opts.map((o) => <button key={o} type="button" className="mx-cell" aria-pressed={value === String(o)} aria-label={`${name} ${o}`} onClick={() => pick(String(o))}>{o}</button>)}</div>
+    </div>
+  );
+}
+
+const Half = ({ name, children }: { name: string; children: React.ReactNode }) => (
+  <div className="flex w-full flex-col items-center gap-3">
+    <h3>{name} <span className="num pl-2 font-normal">£[PRICE]</span></h3>
     {children}
   </div>
 );
 
-const Chev = () => <svg className="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>;
-const Fold = ({ title, open, children }: { title: string; open?: boolean; children: React.ReactNode }) => (
-  <details open={open} className="border-b border-line"><summary className="flex min-h-12 cursor-pointer items-center gap-3 font-semibold">{title}<Chev /></summary><div className="pb-5 text-mute">{children}</div></details>
-);
-
 const fitNote = (p: Product) =>
-  p.fit === "Slim" ? "Slim fit sits close, with a narrow lapel and a tapered leg."
-    : p.fit === "Tailored" ? "Tailored fit sits close through the chest and waist, with a slight taper."
-    : "Regular fit has a fuller chest and a straight leg.";
+  p.fit === "Slim" ? "The slim fit sits close, with a narrow lapel and a tapered leg."
+    : p.fit === "Tailored" ? "The tailored fit sits close through the chest and waist, with a slight taper."
+    : "The regular fit has a fuller chest and a straight leg.";
 
 export function ProductPage() {
   const { handle = "" } = useParams();
   const p = store.product(handle);
   const { sizes } = useSizes();
-  const [chest, setChest] = useState<number | null>(null);
-  const [len, setLen] = useState<string | null>(null);
-  const [waist, setWaist] = useState<number | null>(null);
-  const [leg, setLeg] = useState<number | null>(null);
-  const [ukJ, setUkJ] = useState<number | null>(null);
-  const [ukT, setUkT] = useState<number | null>(null);
-  const [age, setAge] = useState<string | null>(null);
-  const [collar, setCollar] = useState<string | null>(null);
-  const [sleeve, setSleeve] = useState<string | null>(null);
-  useEffect(() => { setChest(null); setLen(null); setWaist(null); setLeg(null); setUkJ(null); setUkT(null); setAge(null); setCollar(null); setSleeve(null); }, [handle]);
-  const buy = useRef<HTMLAnchorElement>(null);
+  const [a, setA] = useState<string | null>(null); // jacket, UK size, age or collar
+  const [b, setB] = useState<string | null>(null); // trousers or sleeve
+  useEffect(() => { setA(null); setB(null); }, [handle]);
   if (!p) return <NotFound />;
 
   const menSuit = p.kind === "suit";
-  const c = chest ?? sizes?.chest ?? null, l = len ?? sizes?.length ?? null, w = waist ?? sizes?.waist ?? null, g = leg ?? sizes?.leg ?? null;
-  const out = p.soldOut ?? [];
+  const lengths = JACKET_LENGTHS.filter((x) => !p.lengths || p.lengths.includes(x));
+  const legs = TROUSER_LEGS.filter((x) => !p.legs || p.legs.includes(x));
+  // The shopper's saved sizes, where this piece is cut in them.
+  const myJ = sizes && lengths.includes(sizes.length) ? `${sizes.chest}${sizes.length}` : null;
+  const myT = sizes && legs.includes(sizes.leg) ? `${sizes.waist}/${sizes.leg}` : null;
+  const j = menSuit ? a ?? myJ : a;
+  const t = menSuit ? b ?? myT : p.kind === "trousers" ? a ?? myT : b;
   const related = store.related(p);
   const path = `/products/${p.handle}`;
   const coll = p.collections[0];
   const collTitle = store.collection(coll)?.title ?? p.type;
   const noReturn = noReturnLine(p);
   const d = SITE.delivery;
+  const or = (v: string | null) => v ?? "to choose";
 
-  const or = (v: string | number | null, w: string) => (v === null ? w : String(v));
-  const pair = (a: string | number | null, b: string | number | null, an: string, bn: string, sep: string) =>
-    a !== null && b !== null ? `${a}${sep}${b}` : a !== null ? `${a}, ${bn} to choose` : b !== null ? `${b}, ${an} to choose` : "to choose";
-  const two = menSuit || p.kind === "womens-suit";
-  // The card's top line: what has been chosen so far, in words.
-  const chosen =
-    menSuit ? `Jacket ${pair(c, l, "chest", "length", "")}; trousers ${pair(w, g, "waist", "leg", "/")}`
-      : p.kind === "trousers" ? `Trousers ${pair(w, g, "waist", "leg", "/")}`
-      : p.kind === "womens-suit" ? `Jacket ${or(ukJ, "to choose")}, trousers ${or(ukT, "to choose")}`
-      : p.kind === "dress" ? `UK size ${or(ukJ, "to choose")}`
-      : p.kind === "kids" ? `Age ${or(age, "to choose")}`
-      : p.kind === "shirt" ? `Collar ${or(collar, "to choose")}, sleeve ${or(sleeve, "to choose")}`
+  const jacket = <Matrix name="Jacket size" head="Chest" cols={JACKET_CHESTS} rows={lengths} rowName={(r) => LEN[r]} code={(c, r) => `${c}${r}`} say={(c, r) => `Jacket, ${c} inch chest, ${LEN[r].toLowerCase()}`} value={j} pick={setA} mine={myJ} />;
+  const trousers = (set: (v: string) => void) => <Matrix name="Trouser size" head="Waist" cols={TROUSER_WAISTS} rows={legs} rowName={(r) => `Leg ${r}`} code={(c, r) => `${c}/${r}`} say={(c, r) => `Trousers, ${c} inch waist, ${r} inch leg`} value={t} pick={set} mine={myT} />;
+
+  const sizing =
+    menSuit ? { body: <><Half name="Jacket">{jacket}</Half><Half name="Trousers">{trousers(setB)}</Half></>, chosen: `Jacket ${or(j)}, trousers ${or(t)}` }
+      : p.kind === "trousers" ? { body: trousers(setA), chosen: `Trousers ${or(t)}` }
+      : p.kind === "womens-suit" ? { body: <><Half name="Jacket"><Keys name="UK size, jacket" opts={UK_SIZES} value={a} pick={setA} /></Half><Half name="Trousers"><Keys name="UK size, trousers" opts={UK_SIZES} value={b} pick={setB} /></Half></>, chosen: `Jacket ${or(a)}, trousers ${or(b)}` }
+      : p.kind === "dress" ? { body: <Keys name="UK size" opts={UK_SIZES} value={a} pick={setA} />, chosen: `UK size ${or(a)}` }
+      : p.kind === "kids" ? { body: <Keys name="Age" opts={KIDS_AGES} value={a} pick={setA} />, chosen: `Age ${or(a)}` }
+      : p.kind === "shirt" ? { body: <><Keys name="Collar" opts={COLLARS} value={a} pick={setA} /><Keys name="Sleeve" opts={SLEEVES} value={b} pick={setB} /></>, chosen: `Collar ${or(a)}, sleeve ${or(b)}` }
       : null;
 
-  const trouserRows = (
-    <>
-      <Row legend="Waist" opts={TROUSER_WAISTS} value={w} set={setWaist} mine={sizes?.waist} />
-      <Row legend="Leg" opts={TROUSER_LEGS.filter((x) => !p.legs || p.legs.includes(x))} value={g as (typeof TROUSER_LEGS)[number] | null} set={setLeg} mine={sizes?.leg} dead={(x) => w !== null && out.includes(`${w}/${x}`)} />
-    </>
-  );
-  const rows =
-    menSuit ? (
-      <>
-        <Piece name="Jacket">
-          <Row legend="Chest" opts={JACKET_CHESTS} value={c} set={setChest} mine={sizes?.chest} />
-          <Row legend="Length" opts={JACKET_LENGTHS.filter((x) => !p.lengths || p.lengths.includes(x))} value={l as (typeof JACKET_LENGTHS)[number] | null} set={setLen} mine={sizes?.length} dead={(x) => c !== null && out.includes(`${c}${x}`)} />
-        </Piece>
-        <Piece name="Trousers">{trouserRows}</Piece>
-      </>
-    )
-      : p.kind === "trousers" ? <Piece name="Trousers">{trouserRows}</Piece>
-      : p.kind === "womens-suit" ? (
-        <>
-          <Piece name="Jacket"><Row legend="UK size" opts={UK_SIZES} value={ukJ} set={setUkJ} /></Piece>
-          <Piece name="Trousers"><Row legend="UK size" opts={UK_SIZES} value={ukT} set={setUkT} /></Piece>
-        </>
-      )
-      : p.kind === "dress" ? <div className="px-4 sm:px-5"><Row legend="UK size" opts={UK_SIZES} value={ukJ} set={setUkJ} /></div>
-      : p.kind === "kids" ? <div className="px-4 sm:px-5"><Row legend="Age" opts={KIDS_AGES} value={age} set={setAge} /></div>
-      : p.kind === "shirt" ? (
-        <div className="px-4 sm:px-5">
-          <Row legend="Collar" opts={COLLARS} value={collar} set={setCollar} />
-          <Row legend="Sleeve" opts={SLEEVES} value={sleeve} set={setSleeve} />
-        </div>
-      )
-      : null;
-
-  const sizing = rows && (
-    <div className="flex flex-col gap-3">
-      <div className="@container rounded-pill border border-ink bg-paper">
-        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-ink px-4 py-3 sm:px-5">
-          <h2 className="t-sub">Fitting card</h2>
-          <p className="voice not-italic" aria-live="polite">{chosen}</p>
-        </div>
-        <div className={two ? "grid @[38rem]:grid-cols-2 @[38rem]:divide-x @[38rem]:divide-ink [&>*+*]:border-t [&>*+*]:border-ink @[38rem]:[&>*+*]:border-t-0" : "[&_.card-row:first-of-type]:border-t-0"}>{rows}</div>
-      </div>
-      {menSuit && <p>New: choose the jacket and the trousers in different sizes. {fitNote(p)}</p>}
-      {(menSuit || p.kind === "trousers") && <p className="text-mute">{sizes ? <>The dot marks your saved sizes (<Link to="/find-my-sizes" className="underline underline-offset-4">change</Link>). Struck-through sizes are out of stock.</> : <>Not sure? <Link to="/find-my-sizes" className="underline underline-offset-4">Find my sizes</Link> from height, chest and waist.</>}</p>}
-    </div>
-  );
-
-  const voice = [p.fit && menSuit ? `${p.fit} fit` : null, p.cloth, p.colour].filter(Boolean).join(", ").toLowerCase().replace(/^./, (x) => x.toUpperCase());
+  const line = [p.fit && menSuit ? `${p.fit} fit` : null, p.cloth, p.colour].filter(Boolean).join(", ").toLowerCase().replace(/^./, (x) => x.toUpperCase());
 
   return (
     <>
@@ -149,59 +100,85 @@ export function ProductPage() {
         jsonLd={[breadcrumbs([{ name: "Home", path: "/" }, { name: collTitle, path: `/shop/${coll}` }, { name: p.title, path }]),
           { "@context": "https://schema.org", "@type": "Product", name: p.title, description: p.details, ...(p.images.length ? { image: p.images.map((i) => absolute(`/img/${i}.webp`)) } : {}), material: p.cloth, color: p.colour, brand: { "@type": "Brand", name: SITE.name }, category: p.type }]} />
 
-      <section className="wrap grid gap-x-14 gap-y-5 pb-16 pt-3 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] md:gap-x-8 lg:gap-x-14 lg:pt-8 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
-        <div className="flex flex-col gap-2 md:col-start-2 md:row-start-1">
-          <nav aria-label="Breadcrumb" className="t-small"><Link to="/" className="inline-flex min-h-11 items-center underline underline-offset-4">Home</Link> <span aria-hidden="true">/</span> <Link to={`/shop/${coll}`} className="inline-flex min-h-11 items-center underline underline-offset-4">{collTitle}</Link></nav>
-          <h1>{p.title}</h1>
-          <p className="voice">{voice}</p>
-          <p className="t-lede pt-1">{priceLine(p)}</p>
+      <Title crumbs={<Crumbs trail={[[`/shop/${coll}`, collTitle]]} here={p.title} />} title={p.title} line={line} />
+
+      <section className="wrap flex flex-col items-center gap-8">
+        <figure className="flex w-full max-w-[26rem] flex-col items-center gap-2">
+          <Picture p={p} eager className="w-full" />
+          {!p.images[0] && <figcaption className="t-small text-mute">A drawing of the piece. Its photograph is to come.</figcaption>}
+        </figure>
+
+        <div className="col gap-3">
+          <p className="t-lede">{priceLine(p)}</p>
+          <p>{p.details}</p>
+          {menSuit && <p>{fitNote(p)}</p>}
         </div>
 
-        <div className="md:sticky md:top-24 md:col-start-1 md:row-span-2 md:row-start-1 md:self-start">
-          <div className="overflow-hidden rounded-pill bg-sage" style={garmentVT(p.handle)}>
-            {p.images[0]
-              ? <img src={img(p.images[0])} alt={p.title} width="1100" height="1366" className="aspect-[4/5] w-full object-cover" />
-              : <PhotoSlot art={p.slot?.art ?? "jacket"} label={p.type} line={p.slot?.line ?? ""} className="aspect-[4/5]" />}
+        {sizing && (
+          <div className="flex w-full flex-col items-center gap-7">
+            <Heading>Choose your size</Heading>
+            {sizing.body}
+            {(menSuit || p.kind === "trousers") && (
+              <p className="max-w-[38rem]">
+                {sizes ? <><span className="mr-2 inline-block h-2 w-2 rotate-45 bg-brass align-middle" aria-hidden="true" />The brass mark is your saved size. <Link to="/find-my-sizes" className="inl">Change my sizes</Link></>
+                  : <>Not sure of your size? <Link to="/find-my-sizes" className="inl">Find my sizes</Link> from your height, chest and waist.</>}
+                {menSuit && " If you are between two sizes, take the larger and we will alter it in the shop."}
+              </p>
+            )}
+            <p className="num text-lg" aria-live="polite">{sizing.chosen}</p>
+          </div>
+        )}
+
+        <div className="col gap-3">
+          <a href={`tel:${SITE.phoneIntl}`} className="btn min-h-14 w-full max-w-[22rem]">Reserve to try on</a>
+          <p>Telephone <a href={`tel:${SITE.phoneIntl}`} className="inl num whitespace-nowrap">{SITE.phone}</a> and we will put it aside, or walk in. This piece is a sample; ordering opens at launch.</p>
+          {noReturn && <p><b>{noReturn}.</b> Please try it on in the shop before you buy.</p>}
+        </div>
+
+        <div className="col gap-8 pt-4">
+          <div className="flex w-full flex-col items-center gap-3">
+            <h2 className="t-plate">Delivery and returns</h2>
+            <dl className="spec spec-even">
+              <dt>{d.standard.name}</dt><dd><span className="num">{d.standard.price}</span>, {d.standard.time}</dd>
+              <dt>{d.express.name}</dt><dd><span className="num">{d.express.price}</span>, {d.express.time}</dd>
+              <dt>Free delivery</dt><dd>On orders of <span className="num">{d.freeOver}</span> and over</dd>
+              <dt>Collect</dt><dd>{d.collect}</dd>
+              <dt>Returns</dt><dd>{noReturn ? `${noReturn}.` : `Within ${SITE.returns.days} days.`}</dd>
+            </dl>
+            <Link to="/delivery-returns" className="link">Delivery and returns in full</Link>
+          </div>
+          <div className="flex flex-col items-center gap-2">
+            <h2 className="t-plate">Cloth and care</h2>
+            <p>[FABRIC COMPOSITION AND CARE]</p>
+          </div>
+          {menSuit && (
+            <div className="flex flex-col items-center gap-2">
+              <h2 className="t-plate">How the sizes work</h2>
+              <p>The jacket size is your chest in inches. Short, regular and long are jacket lengths for heights under 5'8", from 5'8" to 6'0", and over 6'0". Trousers are sized by waist and inside leg.</p>
+            </div>
+          )}
+          <div className="flex flex-col items-center gap-2">
+            <h2 className="t-plate">Alterations</h2>
+            <p>Hems, sleeves and waists are altered in the shop. <Link to="/alterations" className="inl">Read about alterations</Link></p>
           </div>
         </div>
 
-        <div className="flex flex-col gap-7 md:col-start-2 md:row-start-2 md:self-start">
-          {sizing}
-
-          <div className="flex flex-col gap-3">
-            <a ref={buy} href={`tel:${SITE.phoneIntl}`} className="btn btn-ink min-h-14">Reserve to try on</a>
-            <p>{noReturn && <><b>{noReturn}.</b> Please try it on in the shop before you buy. </>}Call <a href={`tel:${SITE.phoneIntl}`} className="whitespace-nowrap underline underline-offset-4">{SITE.phone}</a> or walk in. <span className="text-mute">Online ordering opens at launch; this is a sample product.</span></p>
-            {menSuit && <p className="text-mute">Between sizes? Take the larger and have it altered in the shop.</p>}
+        {related.length > 0 && (
+          <div className="flex w-full max-w-[44rem] flex-col items-center gap-5 pt-6">
+            <Heading>{menSuit ? "To finish the outfit" : "From the same department"}</Heading>
+            <ul className="w-full border-t border-hair">
+              {related.map((x) => (
+                <li key={x.handle} className="border-b border-hair">
+                  <VLink to={x.kind === "mtm" ? "/made-to-measure" : `/products/${x.handle}`} className="group grid min-h-14 grid-cols-1 items-baseline gap-x-6 py-3 sm:grid-cols-[1fr_1fr]">
+                    <span className="text-lg underline decoration-transparent decoration-1 underline-offset-4 group-hover:decoration-current sm:text-right">{x.title}</span>
+                    <span className="text-mute sm:text-left">{x.cloth === "Your choice" ? "Your cloth" : `${x.cloth}, ${x.colour.toLowerCase()}`}. {priceLine(x)}</span>
+                  </VLink>
+                </li>
+              ))}
+            </ul>
           </div>
-
-          <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 border-y border-line py-4">
-            <dt className="text-mute">{d.standard.name}</dt><dd>{d.standard.price}, {d.standard.time}</dd>
-            <dt className="text-mute">{d.express.name}</dt><dd>{d.express.price}, {d.express.time}</dd>
-            <dt className="text-mute">Free delivery</dt><dd>On orders of {d.freeOver} and over</dd>
-            <dt className="text-mute">Collect</dt><dd>{d.collect}</dd>
-            <dt className="text-mute">Returns</dt><dd>{noReturn ? `${noReturn}.` : `${SITE.returns.days} days.`} <Link to="/delivery-returns" className="underline underline-offset-4">Delivery and returns</Link></dd>
-          </dl>
-
-          <div>
-            <Fold title="Details" open><p>{p.details}</p></Fold>
-            <Fold title="Cloth and care"><p>[FABRIC COMPOSITION AND CARE]</p></Fold>
-            {menSuit && <Fold title="Size guide"><p>Jacket size is your chest in inches. S, R and L are jacket lengths for heights under 5'8", 5'8" to 6'0", and over 6'0". Trousers are sized by waist and inside leg.</p></Fold>}
-            <Fold title="Alterations"><p>Hems, sleeves and waists are altered in the shop. <Link to="/alterations" className="underline underline-offset-4">See alterations</Link>.</p></Fold>
-          </div>
-        </div>
+        )}
       </section>
-
-      {related.length > 0 && (
-        <section className="wrap flex flex-col gap-6">
-          <h2>{menSuit ? "Finish the outfit" : "You might also like"}</h2>
-          <ul className="rail sm:mx-0 sm:grid sm:grid-cols-4 sm:gap-5 sm:overflow-visible sm:px-0">{related.map((x) => <li key={x.handle} className="w-[62vw] shrink-0 snap-start sm:w-auto"><ProductCard p={x} /></li>)}</ul>
-        </section>
-      )}
-
-      <StickyBar watch={buy}>
-        <p className="min-w-0 leading-tight"><span className="block truncate font-semibold">{p.title}</span><span className="t-small block truncate text-mute">{priceLine(p)}</span></p>
-        <a href={`tel:${SITE.phoneIntl}`} className="btn btn-ink shrink-0 px-4">Reserve to try on</a>
-      </StickyBar>
     </>
   );
 }
