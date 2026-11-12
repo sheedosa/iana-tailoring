@@ -23,6 +23,7 @@ export function Logo({ white = false, className = "" }: { white?: boolean; class
 export function Header() {
   const { label } = useSizes();
   const sizes = label ? `My sizes: ${label}` : "Find my sizes";
+  const sizesNav = label ? <>My sizes <span className="num pl-1.5">{label}</span></> : "Find my sizes";
   return (
     <>
       <header className="on-green bg-green text-on-green">
@@ -35,9 +36,9 @@ export function Header() {
       <nav aria-label="Main" className="on-green sticky top-0 z-40 bg-green text-chalk">
         <div className="wrap"><span className="rule2" /></div>
         <div className="navrow">
-          <ul className="mx-auto flex w-max gap-x-5 px-4 sm:gap-x-10 sm:px-8">
-            {NAV.map((n) => <li key={n.to}><NavLink to={n.to} className={({ isActive }) => `inline-flex min-h-12 min-w-11 items-center justify-center whitespace-nowrap border-y-2 border-transparent ${isActive ? "border-b-chalk" : "hover:border-b-rule-green"}`}>{n.label}</NavLink></li>)}
-            <li className="lg:hidden"><NavLink to="/find-my-sizes" className={({ isActive }) => `inline-flex min-h-12 min-w-11 items-center justify-center whitespace-nowrap border-y-2 border-transparent ${isActive ? "border-b-chalk" : ""}`}>{sizes}</NavLink></li>
+          <ul className="mx-auto flex w-max gap-x-5 px-4 sm:gap-x-9 sm:px-8">
+            {NAV.map((n) => <li key={n.to}><NavLink to={n.to} className={({ isActive }) => `navlink inline-flex min-h-12 min-w-11 items-center justify-center whitespace-nowrap border-y-2 border-transparent ${isActive ? "border-b-chalk" : "hover:border-b-rule-green"}`}>{n.label}</NavLink></li>)}
+            <li className="lg:hidden"><NavLink to="/find-my-sizes" className={({ isActive }) => `navlink inline-flex min-h-12 min-w-11 items-center justify-center whitespace-nowrap border-y-2 border-transparent ${isActive ? "border-b-chalk" : ""}`}>{sizesNav}</NavLink></li>
           </ul>
         </div>
         <span className="block h-[2px] bg-brass" aria-hidden="true" />
@@ -72,7 +73,7 @@ export function Title({ crumbs, title, line, hero = false, children }: { crumbs?
 
 /** A section heading between its own pair of rules, narrower than a page title. */
 export const Heading = ({ children, id }: { children: ReactNode; id?: string }) => (
-  <div className="mx-auto flex w-full max-w-[26rem] flex-col items-center gap-3">
+  <div className="mx-auto flex w-full max-w-[28rem] flex-col items-center gap-3">
     <span className="rule2" aria-hidden="true" /><h2 id={id}>{children}</h2><span className="rule2" aria-hidden="true" />
   </div>
 );

@@ -1,11 +1,12 @@
 @import "tailwindcss";
 
-/* I & A Formal, v4: a tailor's catalogue. Bottle green and Sage on Chalk, one Brass rule.
-   Caslon throughout (Display for titles, Text for reading); Hanken Grotesk only for sizes, prices and fields.
+/* I & A Formal, v5: a tailor's catalogue. Bottle green and Sage on Chalk, one Brass rule.
+   Titles are engraved capitals: Marcellus, uppercase, tracked, small and wide, like the fascia over a shop.
+   Libre Caslon Text for reading; Hanken Grotesk only for sizes, prices and fields.
    Everything is centred. Corners are square. Titles sit between double rules; pictures sit in a frame with a mount.
    The tape appears once: the fitting line. */
 @theme {
-  --font-display: "Libre Caslon Display", "Libre Caslon Text", Georgia, serif;
+  --font-display: "Marcellus", "Libre Caslon Text", Georgia, serif;
   --font-serif: "Libre Caslon Text", Georgia, serif;
   --font-sans: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
   --color-green: #1f322b;       /* header, footer, the fitting line, the main button */
@@ -22,12 +23,17 @@
 }
 
 :root {
-  --t-hero: clamp(2.125rem, 1.35rem + 3.3vw, 4.25rem);
-  --t-title: clamp(2rem, 1.4rem + 2.6vw, 3.625rem);
-  --t-section: clamp(1.625rem, 1.3rem + 1.4vw, 2.5rem);
-  --t-plate: clamp(1.5rem, 1.3rem + 0.85vw, 2rem);
-  --t-sub: 1.25rem;
-  --t-lede: clamp(1.125rem, 1.08rem + 0.2vw, 1.25rem);
+  /* Capitals are set small and wide. Tracking opens as the size falls. */
+  --t-hero: clamp(1.5rem, 1.2rem + 1.5vw, 2.5rem);
+  --t-title: clamp(1.375rem, 1.15rem + 1.1vw, 2.25rem);
+  --t-section: clamp(1.1875rem, 1.08rem + 0.5vw, 1.5rem);
+  --t-plate: clamp(1.0625rem, 1.02rem + 0.2vw, 1.1875rem);
+  --t-sub: 1rem;
+  --t-nav: 0.875rem;
+  --t-lede: clamp(1.125rem, 1.1rem + 0.1vw, 1.1875rem);
+  --track-title: 0.09em;
+  --track-section: 0.11em;
+  --track-small: 0.14em;
   --t-body: 1.0625rem;
   --t-small: 0.9375rem;
   --ease-out: cubic-bezier(.2, .7, .2, 1);
@@ -39,10 +45,13 @@
 @layer base {
   body { @apply bg-chalk text-ink font-serif antialiased; font-size: var(--t-body); font-weight: 400; line-height: 1.6; text-align: center; }
   strong, b { font-weight: 700; }
-  h1, h2, .display { font-family: var(--font-display); font-weight: 400; text-wrap: balance; }
-  h1 { font-size: var(--t-title); line-height: 1.08; }
-  h2 { font-size: var(--t-section); line-height: 1.12; }
-  h3 { font-family: var(--font-serif); font-weight: 700; font-size: var(--t-sub); line-height: 1.3; text-wrap: balance; }
+  /* Engraved capitals. The leading pad equals the tracking, so a centred line stays centred. */
+  h1, h2, h3, .display { font-family: var(--font-display); font-weight: 400; font-synthesis: none; text-transform: uppercase; font-kerning: normal;
+    letter-spacing: var(--track); padding-inline-start: var(--track); text-wrap: balance; }
+  h1 { --track: var(--track-title); font-size: var(--t-title); line-height: 1.25; max-inline-size: 17.5em; }
+  h2, .display { --track: var(--track-section); font-size: var(--t-section); line-height: 1.3; max-inline-size: 18.5em; }
+  h3 { --track: var(--track-small); font-size: var(--t-sub); line-height: 1.4; }
+  h1 .num, h2 .num, h3 .num { letter-spacing: 0.02em; }
   p { text-wrap: pretty; }
   a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--color-green); outline-offset: 2px; }
   .on-green :focus-visible { outline-color: var(--color-chalk); }
@@ -61,9 +70,12 @@
   .wrap { @apply mx-auto w-full max-w-[72rem] px-4 sm:px-8; }
   .col { @apply mx-auto flex w-full max-w-[38rem] flex-col items-center; }
 
-  .t-hero { font-size: var(--t-hero); line-height: 1.06; }
-  .t-section { font-size: var(--t-section); line-height: 1.12; }
-  .t-plate { font-size: var(--t-plate); line-height: 1.15; }
+  .t-hero { font-size: var(--t-hero); line-height: 1.25; }
+  .t-section { --track: var(--track-section); font-size: var(--t-section); line-height: 1.3; }
+  .t-plate { --track: var(--track-small); font-size: var(--t-plate); line-height: 1.4; }
+  /* The departments in the header: the same capitals at their smallest. */
+  .navlink { font-family: var(--font-display); font-size: var(--t-nav); text-transform: uppercase; letter-spacing: var(--track-small); padding-inline-start: var(--track-small); }
+  .navlink .num { letter-spacing: 0.04em; }
   .t-lede { font-size: var(--t-lede); line-height: 1.55; }
   .t-small { font-size: var(--t-small); line-height: 1.5; }
   /* Sizes, prices and fields: the only sans on the site. */
@@ -79,7 +91,7 @@
   .frame > * { display: block; width: 100%; }
   .on-green .frame { border-color: var(--color-rule-green); background: transparent; }
 
-  .btn { @apply inline-flex min-h-12 items-center justify-center px-7 text-center; font-size: 1.0625rem; background: var(--color-green); color: var(--color-chalk); border: 1px solid var(--color-green); transition: background-color var(--dur-1) ease; }
+  .btn { @apply inline-flex min-h-12 items-center justify-center px-7 text-center; font-size: 1.0625rem; font-weight: 700; background: var(--color-green); color: var(--color-chalk); border: 1px solid var(--color-green); transition: background-color var(--dur-1) ease; }
   .btn:hover { background: var(--color-green-deep); }
   .btn-line { background: transparent; color: var(--color-green); }
   .btn-line:hover { background: var(--color-sage); }
@@ -168,7 +180,8 @@
   .fit-track .tape-fill { width: calc((var(--sel) + 0.5) * 20cqw); }
   .fit-track .tape-clip { left: calc((var(--sel) + 0.5) * 20cqw); }
   .fit-stage { display: flex; width: 100%; height: 100%; min-height: 2.75rem; flex-direction: column; align-items: center; gap: 0.125rem; padding: 0 0.5rem 1.25rem; }
-  .fit-stage b { font-weight: 400; font-family: var(--font-display); font-size: clamp(1.125rem, 0.5rem + 1.5cqw, 1.625rem); line-height: 1.2; border-bottom: 1px solid transparent; }
+  .fit-stage b { display: flex; min-height: 2.9em; align-items: flex-end; padding-bottom: 0.25em; font-weight: 400; font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.1em; padding-inline-start: 0.1em;
+    font-size: clamp(0.8125rem, 0.4rem + 0.85cqw, 1rem); line-height: 1.3; text-wrap: balance; border-bottom: 1px solid transparent; }
   .fit-stage:hover b, .fit-stage[aria-pressed="true"] b { border-bottom-color: currentColor; }
   .fit-row { position: relative; padding-left: 1.125rem; text-align: left; }
   .fit-row::before { content: ""; position: absolute; left: 0; top: 1.4rem; width: 0.75rem; height: 1px; background: currentColor; }

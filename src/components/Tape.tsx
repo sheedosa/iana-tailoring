@@ -88,7 +88,7 @@ export function FittingLine() {
           {stages.map((x, i) => (
             <li key={x.name} ref={(el) => { rows.current[i] = el; }} className="fit-row">
               <button type="button" className="flex min-h-14 w-full flex-col justify-center gap-0.5 py-2.5 text-left" aria-pressed={sel === i} aria-expanded={sel === i} onClick={() => setSel(i)} onKeyDown={(e) => keys(e, i)}>
-                <span className={`display text-[1.375rem] leading-tight text-chalk ${sel === i ? "underline decoration-1 underline-offset-[0.3em]" : ""}`}>{x.name}</span>
+                <span className={`display !text-[1.0625rem] text-chalk ${sel === i ? "underline decoration-1 underline-offset-[0.3em]" : ""}`}>{x.name}</span>
                 <span className="num">{x.mark}</span>
               </button>
               {sel === i && (
