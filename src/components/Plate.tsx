@@ -29,7 +29,7 @@ export const sizeRun = (p: Product): React.ReactNode => {
 };
 
 /** One piece in the catalogue: the framed picture on one side, its specification on the other. */
-export function Plate({ p, flip = false, eager = false }: { p: Product; flip?: boolean; eager?: boolean }) {
+export function Plate({ p, flip = false, eager = false, first = false }: { p: Product; flip?: boolean; eager?: boolean; first?: boolean }) {
   const { sizes } = useSizes();
   const mine = cutIn(p, sizes);
   const mtm = p.kind === "mtm";
@@ -37,9 +37,9 @@ export function Plate({ p, flip = false, eager = false }: { p: Product; flip?: b
   const run = sizeRun(p);
   return (
     <article className={`plate ${flip ? "plate-flip" : ""}`}>
-      <VLink to={to} className="plate-pic" tabIndex={-1} aria-hidden="true"><Picture p={p} eager={eager} /></VLink>
+      <VLink to={to} className="plate-pic" tabIndex={-1} aria-hidden="true"><Picture p={p} eager={eager} first={first} /></VLink>
       <div className="plate-spec">
-        <h2 className="t-plate"><VLink to={to} className="inline-flex min-h-11 items-center underline decoration-transparent decoration-1 underline-offset-[0.2em] hover:decoration-current">{p.title}</VLink></h2>
+        <h2 className="t-plate"><VLink to={to} className="inline-flex min-h-11 items-center underline decoration-transparent decoration-1 underline-offset-[0.2em] hover:decoration-current active:decoration-current">{p.title}</VLink></h2>
         <dl className="spec">
           <dt>Cloth</dt><dd>{p.cloth}</dd>
           <dt>Colour</dt><dd>{p.colour}</dd>
@@ -47,12 +47,14 @@ export function Plate({ p, flip = false, eager = false }: { p: Product; flip?: b
           {run && <><dt>Sizes</dt><dd>{run}</dd></>}
           <dt>Price</dt><dd>{priceLine(p)}</dd>
         </dl>
-        {sizes && mine !== null && (
-          <p className="t-small flex items-center gap-2">
-            {mine && <span className="inline-block h-2 w-2 rotate-45 bg-brass" aria-hidden="true" />}
-            {mine ? <>Cut in your size, <span className="num">{p.kind === "suit" ? sizeLabel(sizes) : `${sizes.waist}/${sizes.leg}`}</span></>
-              : <>Not cut in your {p.kind === "suit" && p.lengths && !p.lengths.includes(sizes.length) ? `${LEN[sizes.length]} jacket length` : `${sizes.leg} inch leg`}</>}
-          </p>
+        {(p.kind === "suit" || p.kind === "trousers") && (
+          <p className="mine t-small">{sizes && mine !== null && (
+            <span className="inline-flex items-center gap-2">
+              {mine && <span className="inline-block h-2 w-2 shrink-0 rotate-45 bg-brass" aria-hidden="true" />}
+              <span>{mine ? <>Cut in your size, <span className="num">{p.kind === "suit" ? sizeLabel(sizes) : `${sizes.waist}/${sizes.leg}`}</span></>
+                : <>Not cut in your {p.kind === "suit" && p.lengths && !p.lengths.includes(sizes.length) ? `${LEN[sizes.length]} jacket length` : `${sizes.leg} inch leg`}</>}</span>
+            </span>
+          )}</p>
         )}
         <VLink to={to} className="link">{mtm ? "How made to measure works" : "Sizes and details"}<span className="sr-only">: {p.title}</span></VLink>
       </div>

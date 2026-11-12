@@ -14,7 +14,7 @@ const routes = ["/", "/find-my-sizes", "/made-to-measure", "/alterations", "/vis
   ...cat.collections.map((c) => `/shop/${c.handle}`),
   ...cat.products.map((p) => `/products/${p.handle}`)];
 
-const types = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".webp": "image/webp", ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg", ".json": "application/json", ".ico": "image/x-icon", ".txt": "text/plain", ".xml": "application/xml", ".webmanifest": "application/manifest+json" };
+const types = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".webp": "image/webp", ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg", ".json": "application/json", ".ico": "image/x-icon", ".txt": "text/plain", ".xml": "application/xml", ".webmanifest": "application/manifest+json", ".woff2": "font/woff2" };
 const server = createServer((req, res) => {
   let p = decodeURIComponent(req.url.split("?")[0]).replace(BASE, "") || "/";
   let f = join(dist, p);
@@ -28,11 +28,14 @@ const PORT = server.address().port;
 const exe = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE || (existsSync("/opt/pw-browsers/chromium") ? "/opt/pw-browsers/chromium" : undefined);
 const browser = await chromium.launch(exe ? { executablePath: exe } : {});
 const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
-page.route(/fonts\.(googleapis|gstatic)\.com/, (r) => r.abort()); // fonts aren't needed for markup
 let n = 0;
 for (const r of routes) {
   await page.goto(`http://localhost:${PORT}${BASE}${r}`, { waitUntil: "networkidle" });
   await page.waitForFunction(() => document.querySelector("h1") && !document.body.innerText.includes("Loading"), null, { timeout: 10000 }).catch(() => {});
+  // Write the page exactly as React first renders it (renderToString), so the browser can hydrate it in place:
+  // no second draw, no flash, no shift when the script starts. The head is the live one, set by <Seo>.
+  const ssr = await page.evaluate(() => window.__prerender());
+  await page.evaluate((h) => { document.getElementById("root").innerHTML = h; }, ssr);
   let html = await page.content();
   html = html.replace("<html", '<html data-prerendered="1"'); // informational only
   const out = r === "/" ? join(dist, "index.html") : join(dist, r.slice(1), "index.html");

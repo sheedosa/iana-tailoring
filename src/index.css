@@ -1,14 +1,31 @@
 @import "tailwindcss";
 
+/* The three faces are served from this site (latin subset, woff2), not from Google Fonts. The two the first screen
+   is set in are preloaded by vite.config.ts. Each has a fallback cut from a font already on the device and scaled to
+   the same width and height (Georgia or Arial on Apple and Windows, Noto Serif or Roboto on Android), so lines do
+   not re-break or move when the real face arrives. Capitals are matched on capitals, figures on figures. */
+@font-face { font-family: "Marcellus"; font-style: normal; font-weight: 400; font-display: swap; src: url("../node_modules/@fontsource/marcellus/files/marcellus-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Libre Caslon Text"; font-style: normal; font-weight: 400; font-display: swap; src: url("../node_modules/@fontsource/libre-caslon-text/files/libre-caslon-text-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Libre Caslon Text"; font-style: normal; font-weight: 700; font-display: swap; src: url("../node_modules/@fontsource/libre-caslon-text/files/libre-caslon-text-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "Hanken Grotesk"; font-style: normal; font-weight: 400; font-display: swap; src: url("../node_modules/@fontsource/hanken-grotesk/files/hanken-grotesk-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Hanken Grotesk"; font-style: normal; font-weight: 600; font-display: swap; src: url("../node_modules/@fontsource/hanken-grotesk/files/hanken-grotesk-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "Marcellus Fallback"; src: local("Georgia"); size-adjust: 93.4%; ascent-override: 104.3%; descent-override: 29.9%; line-gap-override: 0%; }
+@font-face { font-family: "Marcellus Fallback Noto"; src: local("Noto Serif"); size-adjust: 94.2%; ascent-override: 103.4%; descent-override: 29.7%; line-gap-override: 0%; }
+@font-face { font-family: "Caslon Fallback"; font-weight: 400; src: local("Georgia"); size-adjust: 107.7%; ascent-override: 90.1%; descent-override: 24.1%; line-gap-override: 0%; }
+@font-face { font-family: "Caslon Fallback"; font-weight: 700; src: local("Georgia Bold"), local("Georgia-Bold"); size-adjust: 107.7%; ascent-override: 90.1%; descent-override: 24.1%; line-gap-override: 0%; }
+@font-face { font-family: "Caslon Fallback Noto"; src: local("Noto Serif"); size-adjust: 98.7%; ascent-override: 98.2%; descent-override: 26.3%; line-gap-override: 0%; }
+@font-face { font-family: "Hanken Fallback"; src: local("Arial"); size-adjust: 100.7%; ascent-override: 99.3%; descent-override: 30.1%; line-gap-override: 0%; }
+@font-face { font-family: "Hanken Fallback Roboto"; src: local("Roboto"); size-adjust: 99.6%; ascent-override: 100.4%; descent-override: 30.4%; line-gap-override: 0%; }
+
 /* I & A Formal, v5: a tailor's catalogue. Bottle green and Sage on Chalk, one Brass rule.
    Titles are engraved capitals: Marcellus, uppercase, tracked, small and wide, like the fascia over a shop.
    Libre Caslon Text for reading; Hanken Grotesk only for sizes, prices and fields.
    Everything is centred. Corners are square. Titles sit between double rules; pictures sit in a frame with a mount.
    The tape appears once: the fitting line. */
 @theme {
-  --font-display: "Marcellus", "Libre Caslon Text", Georgia, serif;
-  --font-serif: "Libre Caslon Text", Georgia, serif;
-  --font-sans: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Marcellus", "Marcellus Fallback", "Marcellus Fallback Noto", Georgia, serif;
+  --font-serif: "Libre Caslon Text", "Caslon Fallback", "Caslon Fallback Noto", Georgia, serif;
+  --font-sans: "Hanken Grotesk", "Hanken Fallback", "Hanken Fallback Roboto", ui-sans-serif, system-ui, sans-serif;
   --color-green: #1f322b;       /* header, footer, the fitting line, the main button */
   --color-green-deep: #15231e;
   --color-sage: #d8e2dc;        /* the ground inside a frame, quiet bands */
@@ -40,13 +57,21 @@
   --dur-1: 140ms;
   --dur-2: 380ms;
   --dur-3: 700ms;
+  --gutter: 1rem;              /* the page margin; never less than the notch or the rounded corner */
+  --nav-h: 3.75rem;            /* the sticky departments: anchors and focused fields land below it */
 }
+@media (min-width: 40rem) { :root { --gutter: 2rem; } }
 
 @layer base {
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; }
+  /* Controls answer the thumb at once: no double-tap zoom wait, and a pressed state of our own (see :active below). */
+  a, button, input, label { touch-action: manipulation; }
+  [id] { scroll-margin-top: calc(var(--nav-h) + 1rem); }
+  input { scroll-margin-block: calc(var(--nav-h) + 3rem) 9rem; }
   body { @apply bg-chalk text-ink font-serif antialiased; font-size: var(--t-body); font-weight: 400; line-height: 1.6; text-align: center; }
   strong, b { font-weight: 700; }
   /* Engraved capitals. The leading pad equals the tracking, so a centred line stays centred. */
-  h1, h2, h3, .display { font-family: var(--font-display); font-weight: 400; font-synthesis: none; text-transform: uppercase; font-kerning: normal;
+  h1, h2, h3, .display { font-family: var(--font-display); font-weight: 400; font-synthesis: none; text-transform: uppercase; font-kerning: normal; overflow-wrap: break-word; hyphens: none;
     letter-spacing: var(--track); padding-inline-start: var(--track); text-wrap: balance; }
   h1 { --track: var(--track-title); font-size: var(--t-title); line-height: 1.25; max-inline-size: 17.5em; }
   h2, .display { --track: var(--track-section); font-size: var(--t-section); line-height: 1.3; max-inline-size: 18.5em; }
@@ -63,11 +88,12 @@
   * { transition: none !important; animation: none !important; }
   ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
 }
-::view-transition-group(*) { animation-duration: 460ms; animation-timing-function: cubic-bezier(.2, .7, .2, 1); }
-::view-transition-old(root), ::view-transition-new(root) { animation-duration: 220ms; }
+/* A page change is never held up: the whole transition is over inside 320ms. */
+::view-transition-group(*) { animation-duration: 320ms; animation-timing-function: cubic-bezier(.2, .7, .2, 1); }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 200ms; }
 
 @layer components {
-  .wrap { @apply mx-auto w-full max-w-[72rem] px-4 sm:px-8; }
+  .wrap { @apply mx-auto w-full max-w-[72rem]; padding-left: max(var(--gutter), env(safe-area-inset-left)); padding-right: max(var(--gutter), env(safe-area-inset-right)); }
   .col { @apply mx-auto flex w-full max-w-[38rem] flex-col items-center; }
 
   .t-hero { font-size: var(--t-hero); line-height: 1.25; }
@@ -92,17 +118,12 @@
   .on-green .frame { border-color: var(--color-rule-green); background: transparent; }
 
   .btn { @apply inline-flex min-h-12 items-center justify-center px-7 text-center; font-size: 1.0625rem; font-weight: 700; background: var(--color-green); color: var(--color-chalk); border: 1px solid var(--color-green); transition: background-color var(--dur-1) ease; }
-  .btn:hover { background: var(--color-green-deep); }
   .btn-line { background: transparent; color: var(--color-green); }
-  .btn-line:hover { background: var(--color-sage); }
   .on-green .btn { background: var(--color-chalk); color: var(--color-green); border-color: var(--color-chalk); }
-  .on-green .btn:hover { background: var(--color-sage); }
   .link { @apply inline-flex min-h-11 items-center underline underline-offset-4; text-decoration-thickness: 1px; }
-  .link:hover { text-decoration-thickness: 2px; }
   .inl { @apply underline underline-offset-4; text-decoration-thickness: 1px; }
   /* A text toggle: no box, a rule under the one that is on. */
   .opt { @apply inline-flex min-h-11 min-w-11 items-center justify-center px-1; border-bottom: 2px solid transparent; margin-bottom: -2px; }
-  .opt:hover { border-bottom-color: var(--color-hair); }
   .opt[aria-pressed="true"], .opt[aria-current="page"] { border-bottom-color: var(--color-ink); }
 
   /* A specification: terms to the left of the centre line, values to the right. */
@@ -129,7 +150,6 @@
   .mx-head, .mx-row { display: flex; min-height: 2.75rem; align-items: center; justify-content: center; color: var(--color-mute); padding-inline: 0.5rem; }
   .mx-row { font-family: var(--font-serif); font-size: var(--t-small); }
   .mx-cell { position: relative; display: flex; min-height: 2.75rem; min-width: 2.75rem; align-items: center; justify-content: center; border: 1px solid var(--color-hair); margin: 0 -1px -1px 0; background: var(--color-mount); color: var(--color-ink); }
-  .mx-cell:hover { background: var(--color-sage); }
   .mx-cell[aria-pressed="true"] { background: var(--color-green); color: var(--color-chalk); border-color: var(--color-green); box-shadow: inset 0 -4px 0 var(--color-brass); z-index: 1; font-weight: 600; }
   .mx-mine { position: absolute; top: 5px; right: 5px; width: 8px; height: 8px; background: var(--color-brass); transform: rotate(45deg); }
   @media (min-width: 40rem) {
@@ -160,8 +180,9 @@
       linear-gradient(currentColor, currentColor) 50% 0 / 1px 0.8rem no-repeat,
       linear-gradient(currentColor, currentColor) 75% 0 / 1px 0.45rem no-repeat; }
   .tape > i::after { content: attr(data-n); position: absolute; left: 4px; bottom: 0.35rem; }
-  .tape-fill { position: absolute; inset-block: 0; left: 0; background: var(--color-sage); transition: width var(--dur-2) var(--ease-out), height var(--dur-2) var(--ease-out); }
-  .tape-clip { position: absolute; top: -0.5rem; bottom: -0.5rem; width: 3px; margin-left: -1px; background: var(--color-brass); transition: left var(--dur-2) var(--ease-out); }
+  /* The fill and the clip move by transform only, so the tape never asks the page to lay itself out again. */
+  .tape-fill { position: absolute; inset: 0; background: var(--color-sage); transform-origin: 0 0; transition: transform var(--dur-2) var(--ease-out); }
+  .tape-clip { position: absolute; top: -0.5rem; bottom: -0.5rem; left: 0; width: 3px; margin-left: -1px; background: var(--color-brass); transition: transform var(--dur-2) var(--ease-out); }
   .tape-v { flex-direction: column; height: auto; width: 2.5rem; }
   .tape-v > i {
     background:
@@ -170,19 +191,19 @@
       linear-gradient(currentColor, currentColor) 100% 50% / 0.7rem 1px no-repeat,
       linear-gradient(currentColor, currentColor) 100% 75% / 0.4rem 1px no-repeat; }
   .tape-v > i::after { left: 0.3rem; top: 5px; bottom: auto; }
-  .tape-v .tape-fill { inset-block: auto; top: 0; inset-inline: 0; }
+  .tape-v .tape-fill { inset: 0 0 auto; height: 200rem; transform: translateY(calc(var(--fill, 0px) - 200rem)); }
 
   /* Five stages across sixty inches; each stage sits over the middle of its twelve. */
   .fit { container-type: inline-size; --tape-n: 30; }
   @media (min-width: 64rem) { .fit { --tape-n: 60; } }
   .fit-track { position: relative; touch-action: pan-y; cursor: pointer; }
   .fit-track .tape > i { flex-basis: calc(100cqw / var(--tape-n)); }
-  .fit-track .tape-fill { width: calc((var(--sel) + 0.5) * 20cqw); }
-  .fit-track .tape-clip { left: calc((var(--sel) + 0.5) * 20cqw); }
+  .fit-track .tape-fill { transform: scaleX(calc((var(--sel) + 0.5) / 5)); }
+  .fit-track .tape-clip { transform: translateX(calc((var(--sel) + 0.5) * 20cqw)); }
   .fit-stage { display: flex; width: 100%; height: 100%; min-height: 2.75rem; flex-direction: column; align-items: center; gap: 0.125rem; padding: 0 0.5rem 1.25rem; }
   .fit-stage b { display: flex; min-height: 2.9em; align-items: flex-end; padding-bottom: 0.25em; font-weight: 400; font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.1em; padding-inline-start: 0.1em;
     font-size: clamp(0.8125rem, 0.4rem + 0.85cqw, 1rem); line-height: 1.3; text-wrap: balance; border-bottom: 1px solid transparent; }
-  .fit-stage:hover b, .fit-stage[aria-pressed="true"] b { border-bottom-color: currentColor; }
+  .fit-stage[aria-pressed="true"] b, .fit-stage:active b { border-bottom-color: currentColor; }
   .fit-row { position: relative; padding-left: 1.125rem; text-align: left; }
   .fit-row::before { content: ""; position: absolute; left: 0; top: 1.4rem; width: 0.75rem; height: 1px; background: currentColor; }
 
@@ -191,8 +212,57 @@
   /* The one unprompted moment: the three doors opening on Home. */
   .rise { animation: rise var(--dur-3) var(--ease-out) both; animation-delay: calc(var(--i, 0) * 110ms + 60ms); }
 
-  .navrow { display: flex; overflow-x: auto; scrollbar-width: none; }
+  /* The departments: one row that scrolls sideways on a phone. It never drags the page with it, rests on a whole
+     word, and the department you are in is brought into view (Header in Layout.tsx). */
+  .navrow { display: flex; overflow-x: auto; scrollbar-width: none; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity; scroll-padding-inline: var(--gutter); }
   .navrow::-webkit-scrollbar { display: none; }
+  .navlist { display: flex; width: max-content; margin-inline: auto; column-gap: 1.25rem;
+    padding-left: max(var(--gutter), env(safe-area-inset-left)); padding-right: max(var(--gutter), env(safe-area-inset-right)); }
+  .navlist > li { scroll-snap-align: start; }
+  /* The gap steps with the width of the phone so the right edge always falls inside a word, never between two:
+     a cut word is the sign that the row goes on. (Checked at 320, 360, 375, 390, 412 and 430.) */
+  @media (min-width: 23.5rem) { .navlist { column-gap: 1.75rem; } }
+  @media (min-width: 25.125rem) { .navlist { column-gap: 0.75rem; } }
+  @media (min-width: 30rem) { .navlist { column-gap: 1.25rem; } }
+  @media (min-width: 40rem) { .navlist { column-gap: 2.25rem; } }
+  .navitem { display: inline-flex; min-height: 3rem; min-width: 2.75rem; align-items: center; justify-content: center; white-space: nowrap; border-block: 2px solid transparent; }
+  .navitem[aria-current="page"] { border-bottom-color: var(--color-chalk); }
+  .navitem:active { border-bottom-color: var(--color-rule-green); }
+
+  /* A saved-size line on a plate. Empty until the saved sizes are read; it keeps its line for a shopper who has
+     sizes saved (html.has-sizes, set before first paint in index.html) so the list does not move when they arrive. */
+  .mine:empty { display: none; }
+  .has-sizes .mine { min-height: 1.5em; }
+  .has-sizes .mine:empty { display: block; }
+
+  /* Pressed: the control answers under the thumb at once, with no fade in. */
+  .btn:active { background: var(--color-green-deep); transition-duration: 0s; }
+  .btn-line:active, .on-green .btn:active { background: var(--color-sage); }
+  .link:active, .inl:active { text-decoration-thickness: 2px; }
+  .opt:active { border-bottom-color: var(--color-mute); }
+  .mx-cell:active { background: var(--color-sage); }
+  .mx-cell[aria-pressed="true"]:active { background: var(--color-green-deep); }
+}
+
+/* Hover is for a pointer that can hover: on a touch screen it would stick after the tap. */
+@media (hover: hover) {
+  .btn:hover { background: var(--color-green-deep); }
+  .btn-line:hover, .on-green .btn:hover { background: var(--color-sage); }
+  .link:hover { text-decoration-thickness: 2px; }
+  .opt:hover { border-bottom-color: var(--color-hair); }
+  .opt[aria-pressed="true"]:hover, .opt[aria-current="page"]:hover { border-bottom-color: var(--color-ink); }
+  .mx-cell:hover { background: var(--color-sage); }
+  .mx-cell[aria-pressed="true"]:hover { background: var(--color-green); }
+  .fit-stage:hover b { border-bottom-color: currentColor; }
+  .navitem:hover { border-bottom-color: var(--color-rule-green); }
+  .navitem[aria-current="page"]:hover { border-bottom-color: var(--color-chalk); }
+}
+
+/* A phone on its side: the sticky departments slim down, and the notch side keeps its margin (see .wrap). */
+@media (orientation: landscape) and (max-height: 480px) {
+  :root { --nav-h: 3.5rem; }
+  .navitem { min-height: 2.75rem; }
 }
 
 @keyframes swap { from { opacity: 0; } to { opacity: 1; } }

@@ -1,5 +1,5 @@
 import type { CSSProperties, ReactNode } from "react";
-import { img, type Art, type Product } from "../lib/store";
+import { photo, SIZES, type Art, type Product } from "../lib/store";
 import { garmentVT } from "./VLink";
 
 // The catalogue's drawings: one hand for every piece. Each garment is drawn on a 300 x 400 plate in a single
@@ -186,11 +186,12 @@ export function Engraving({ art, small = false, className = "", title }: { art: 
 }
 
 /** A piece's picture in its frame: the photograph if there is one, otherwise its drawing. */
-export function Picture({ p, eager = false, className = "", style }: { p: Product; eager?: boolean; className?: string; style?: CSSProperties }) {
+export function Picture({ p, eager = false, first = false, sizes = SIZES.plate, className = "", style }: { p: Product; eager?: boolean; first?: boolean; sizes?: string; className?: string; style?: CSSProperties }) {
+  const ph = p.images[0] ? photo(p.images[0]) : null;
   return (
     <span className={`frame ${className}`} style={{ ...(p.kind === "mtm" ? {} : garmentVT(p.handle)), ...style }}>
-      {p.images[0]
-        ? <img src={img(p.images[0])} alt={p.title} loading={eager ? "eager" : "lazy"} width="1100" height="1366" className="aspect-[3/4] object-cover" />
+      {ph
+        ? <img src={ph.src} srcSet={ph.srcSet} sizes={sizes} alt={p.title} width={ph.width} height={ph.height} decoding="async" loading={eager || first ? "eager" : "lazy"} fetchPriority={first ? "high" : undefined} className="aspect-[3/4] object-cover" />
         : <Engraving art={p.slot?.art ?? "jacket"} small={p.for === "kids"} title={`${p.title}, drawn`} />}
     </span>
   );

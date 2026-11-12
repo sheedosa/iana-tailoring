@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { useEffect, useRef, type ReactNode } from "react";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { SITE, deliveryLine } from "../data/site";
 import { useSizes } from "../lib/sizes";
 
@@ -24,9 +24,20 @@ export function Header() {
   const { label } = useSizes();
   const sizes = label ? `My sizes: ${label}` : "Find my sizes";
   const sizesNav = label ? <>My sizes <span className="num pl-1.5">{label}</span></> : "Find my sizes";
+  // On a phone the row scrolls sideways: bring the department you are in into view, without moving the page.
+  const row = useRef<HTMLDivElement>(null);
+  const { pathname } = useLocation();
+  useEffect(() => {
+    const box = row.current, on = box?.querySelector<HTMLElement>('[aria-current="page"]');
+    if (!box || !on || box.scrollWidth <= box.clientWidth) return;
+    const b = box.getBoundingClientRect(), r = on.getBoundingClientRect();
+    if (r.left >= b.left + 16 && r.right <= b.right - 16) return;
+    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    box.scrollTo({ left: box.scrollLeft + r.left - b.left - (b.width - r.width) / 2, behavior: still ? "auto" : "smooth" });
+  }, [pathname, label]);
   return (
     <>
-      <header className="on-green bg-green text-on-green">
+      <header className="on-green bg-green pt-[env(safe-area-inset-top)] text-on-green">
         <div className="wrap grid grid-cols-[1fr_auto_1fr] items-center gap-4 pb-4 pt-5 sm:pb-5 sm:pt-7">
           <p className="t-small hidden text-left lg:block">Walk in, {openHours}</p>
           <Link to="/" className="col-start-2 inline-flex min-h-11 items-center"><Logo white className="h-7 w-auto sm:h-8" /></Link>
@@ -35,10 +46,10 @@ export function Header() {
       </header>
       <nav aria-label="Main" className="on-green sticky top-0 z-40 bg-green text-chalk">
         <div className="wrap"><span className="rule2" /></div>
-        <div className="navrow">
-          <ul className="mx-auto flex w-max gap-x-5 px-4 sm:gap-x-9 sm:px-8">
-            {NAV.map((n) => <li key={n.to}><NavLink to={n.to} className={({ isActive }) => `navlink inline-flex min-h-12 min-w-11 items-center justify-center whitespace-nowrap border-y-2 border-transparent ${isActive ? "border-b-chalk" : "hover:border-b-rule-green"}`}>{n.label}</NavLink></li>)}
-            <li className="lg:hidden"><NavLink to="/find-my-sizes" className={({ isActive }) => `navlink inline-flex min-h-12 min-w-11 items-center justify-center whitespace-nowrap border-y-2 border-transparent ${isActive ? "border-b-chalk" : ""}`}>{sizesNav}</NavLink></li>
+        <div className="navrow" ref={row}>
+          <ul className="navlist">
+            {NAV.map((n) => <li key={n.to}><NavLink to={n.to} className="navlink navitem">{n.label}</NavLink></li>)}
+            <li className="lg:hidden"><NavLink to="/find-my-sizes" className="navlink navitem">{sizesNav}</NavLink></li>
           </ul>
         </div>
         <span className="block h-[2px] bg-brass" aria-hidden="true" />
@@ -86,7 +97,7 @@ export function Footer() {
   return (
     <footer className="on-green mt-20 bg-green text-on-green">
       <span className="block h-[2px] bg-brass" aria-hidden="true" />
-      <div className="wrap flex flex-col items-center gap-6 py-12">
+      <div className="wrap flex flex-col items-center gap-6 pb-[calc(3rem+env(safe-area-inset-bottom))] pt-12">
         <Logo white className="h-7 w-auto" />
         <address className="text-chalk">
           {SITE.address.street}, {SITE.address.area}, {SITE.address.city} {SITE.address.postcode}<br />

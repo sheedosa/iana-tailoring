@@ -29,8 +29,8 @@ export function Home() {
             <li key={d.to}>
               <Link to={d.to} className="group flex h-full flex-col items-center gap-3 sm:gap-4">
                 <span className="frame rise !p-1.5 sm:!p-3" style={{ "--i": i } as CSSProperties}><Engraving art={d.art} small={d.small} className="!aspect-[3/5] sm:!aspect-[3/4]" /></span>
-                <span className="display t-section underline decoration-transparent decoration-1 underline-offset-[0.2em] group-hover:decoration-current">{d.title}</span>
-                <span className="t-small -mt-2 text-mute sm:text-[1.0625rem]">{d.line}</span>
+                <span className="display t-section underline decoration-transparent decoration-1 underline-offset-[0.2em] group-hover:decoration-current group-active:decoration-current">{d.title}</span>
+                <span className="t-small -mt-2 max-w-full text-mute [overflow-wrap:anywhere] sm:text-[1.0625rem]">{d.line}</span>
               </Link>
             </li>
           ))}

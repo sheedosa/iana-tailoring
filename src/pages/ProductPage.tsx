@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Seo, breadcrumbs, absolute } from "../components/Seo";
 import { priceLine } from "../components/Plate";
@@ -6,8 +6,9 @@ import { Picture } from "../components/Art";
 import { VLink } from "../components/VLink";
 import { Crumbs, Heading, Title } from "../components/Layout";
 import { NotFound } from "./NotFound";
-import { noReturnLine, store, type Product } from "../lib/store";
+import { noReturnLine, SIZES, store, type Product } from "../lib/store";
 import { useSizes } from "../lib/sizes";
+import { useKept } from "../lib/kept";
 import { COLLARS, JACKET_CHESTS, JACKET_LENGTHS, KIDS_AGES, SITE, SLEEVES, TROUSER_LEGS, TROUSER_WAISTS, UK_SIZES } from "../data/site";
 
 const LEN = { S: "Short", R: "Regular", L: "Long" } as const;
@@ -24,7 +25,7 @@ function Matrix<C extends string | number, R extends string | number>({ name, he
           <span className="mx-row" aria-hidden="true">{rowName(r)}</span>
           {cols.map((c) => {
             const v = code(c, r);
-            return <button key={v} type="button" className="mx-cell" aria-pressed={value === v} aria-label={`${say(c, r)}${mine === v ? ", your saved size" : ""}`} onClick={() => pick(v)}>{v}{mine === v && <span className="mx-mine" aria-hidden="true" />}</button>;
+            return <button key={v} type="button" className="mx-cell" aria-pressed={value === v} aria-label={`${v}: ${say(c, r)}${mine === v ? ", your saved size" : ""}`} onClick={() => pick(v)}>{v}{mine === v && <span className="mx-mine" aria-hidden="true" />}</button>;
           })}
         </Fragment>
       ))}
@@ -58,9 +59,19 @@ export function ProductPage() {
   const { handle = "" } = useParams();
   const p = store.product(handle);
   const { sizes } = useSizes();
-  const [a, setA] = useState<string | null>(null); // jacket, UK size, age or collar
-  const [b, setB] = useState<string | null>(null); // trousers or sleeve
-  useEffect(() => { setA(null); setB(null); }, [handle]);
+  const [a, pickA] = useKept<string | null>("a", null); // jacket, UK size, age or collar
+  const [b, pickB] = useKept<string | null>("b", null); // trousers or sleeve
+  // When the last size is chosen the next step is the button: bring it into view if the size keys have pushed it
+  // off the screen (two matrices are tall on a phone). It moves only on that choice, never on its own.
+  const reserve = useRef<HTMLAnchorElement>(null);
+  const toButton = (done: boolean) => {
+    if (!done) return;
+    requestAnimationFrame(() => {
+      const el = reserve.current; if (!el) return;
+      const r = el.getBoundingClientRect();
+      if (r.bottom > window.innerHeight || r.top < 0) el.scrollIntoView({ block: "nearest", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    });
+  };
   if (!p) return <NotFound />;
 
   const menSuit = p.kind === "suit";
@@ -71,6 +82,11 @@ export function ProductPage() {
   const myT = sizes && legs.includes(sizes.leg) ? `${sizes.waist}/${sizes.leg}` : null;
   const j = menSuit ? a ?? myJ : a;
   const t = menSuit ? b ?? myT : p.kind === "trousers" ? a ?? myT : b;
+  // Only the choice that completes the size moves the page; a shopper whose saved sizes are already marked is left alone.
+  const two = menSuit || p.kind === "womens-suit" || p.kind === "shirt";
+  const hasA = (menSuit ? j : p.kind === "trousers" ? t : a) !== null, hasB = (menSuit ? t : b) !== null;
+  const setA = (v: string) => { pickA(v); toButton(!hasA && (!two || hasB)); };
+  const setB = (v: string) => { pickB(v); toButton(!hasB && hasA); };
   const related = store.related(p);
   const path = `/products/${p.handle}`;
   const coll = p.collections[0];
@@ -104,7 +120,7 @@ export function ProductPage() {
 
       <section className="wrap flex flex-col items-center gap-8">
         <figure className="flex w-full max-w-[26rem] flex-col items-center gap-2">
-          <Picture p={p} eager className="w-full" />
+          <Picture p={p} first sizes={SIZES.page} className="w-full" />
           {!p.images[0] && <figcaption className="t-small text-mute">A drawing of the piece. Its photograph is to come.</figcaption>}
         </figure>
 
@@ -130,7 +146,7 @@ export function ProductPage() {
         )}
 
         <div className="col gap-3">
-          <a href={`tel:${SITE.phoneIntl}`} className="btn min-h-14 w-full max-w-[22rem]">Reserve to try on</a>
+          <a ref={reserve} href={`tel:${SITE.phoneIntl}`} className="btn min-h-14 w-full max-w-[22rem] scroll-mb-4">Reserve to try on</a>
           <p>Telephone <a href={`tel:${SITE.phoneIntl}`} className="inl num whitespace-nowrap">{SITE.phone}</a> and we will put it aside, or walk in. This piece is a sample; ordering opens at launch.</p>
           {noReturn && <p><b>{noReturn}.</b> Please try it on in the shop before you buy.</p>}
         </div>
@@ -170,7 +186,7 @@ export function ProductPage() {
               {related.map((x) => (
                 <li key={x.handle} className="border-b border-hair">
                   <VLink to={x.kind === "mtm" ? "/made-to-measure" : `/products/${x.handle}`} className="group grid min-h-14 grid-cols-1 items-baseline gap-x-6 py-3 sm:grid-cols-[1fr_1fr]">
-                    <span className="text-lg underline decoration-transparent decoration-1 underline-offset-4 group-hover:decoration-current sm:text-right">{x.title}</span>
+                    <span className="text-lg underline decoration-transparent decoration-1 underline-offset-4 group-hover:decoration-current group-active:decoration-current sm:text-right">{x.title}</span>
                     <span className="text-mute sm:text-left">{x.cloth === "Your choice" ? "Your cloth" : `${x.cloth}, ${x.colour.toLowerCase()}`}. {priceLine(x)}</span>
                   </VLink>
                 </li>

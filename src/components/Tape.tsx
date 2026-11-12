@@ -29,17 +29,24 @@ export function FittingLine() {
   const s = stages[sel];
 
   // Phone: the tape runs down the left edge and fills to the chosen stage.
+  // It is measured again whenever the list changes size (a turn of the phone, larger text, the web font arriving).
   const rows = useRef<(HTMLLIElement | null)[]>([]);
+  const list = useRef<HTMLOListElement>(null);
   const [fill, setFill] = useState(0);
   useLayoutEffect(() => {
-    const place = () => { const el = rows.current[sel]; if (el) setFill(el.offsetTop + 22); };
+    const place = () => { const el = rows.current[sel]; if (el) setFill(el.offsetTop + (el.querySelector("button")?.offsetHeight ?? 44) / 2); };
     place();
-    window.addEventListener("resize", place);
-    return () => window.removeEventListener("resize", place);
+    if (!list.current || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(place);
+    ro.observe(list.current);
+    return () => ro.disconnect();
   }, [sel]);
+
+  // Touch: a finger put down on the tape and drawn along it moves through the stages; the page still scrolls up and down.
 
   const scrub = (e: PointerEvent<HTMLDivElement>) => {
     if (e.type === "pointermove" && e.buttons !== 1) return;
+    if (e.type === "pointerdown") e.currentTarget.setPointerCapture?.(e.pointerId);
     const r = e.currentTarget.getBoundingClientRect();
     setSel(Math.max(0, Math.min(last, Math.floor(((e.clientX - r.left) / r.width) * 5))));
   };
@@ -82,9 +89,9 @@ export function FittingLine() {
       {/* Phone: the tape runs down the left edge. */}
       <div className="relative grid grid-cols-[2.5rem_minmax(0,1fr)] gap-3 md:hidden">
         <div className="relative">
-          <Tape n={60} vertical className="absolute inset-y-0 left-0" style={{ "--u": "22px" } as CSSProperties}><span className="tape-fill" style={{ height: fill }} /></Tape>
+          <Tape n={60} vertical className="absolute inset-y-0 left-0" style={{ "--u": "22px" } as CSSProperties}><span className="tape-fill" style={{ "--fill": `${fill}px` } as CSSProperties} /></Tape>
         </div>
-        <ol className="relative flex flex-col">
+        <ol className="relative flex flex-col" ref={list}>
           {stages.map((x, i) => (
             <li key={x.name} ref={(el) => { rows.current[i] = el; }} className="fit-row">
               <button type="button" className="flex min-h-14 w-full flex-col justify-center gap-0.5 py-2.5 text-left" aria-pressed={sel === i} aria-expanded={sel === i} onClick={() => setSel(i)} onKeyDown={(e) => keys(e, i)}>

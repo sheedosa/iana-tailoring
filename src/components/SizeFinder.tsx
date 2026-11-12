@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { suggestSizes } from "../data/site";
 import { useSizes } from "../lib/sizes";
 
@@ -12,6 +12,8 @@ export function SizeFinder() {
   const [ft, setFt] = useState(""); const [inch, setInch] = useState(""); const [chest, setChest] = useState(""); const [waist, setWaist] = useState("");
   const [err, setErr] = useState<Record<string, string>>({});
   const [saved, setSaved] = useState(false);
+  const form = useRef<HTMLFormElement>(null);
+  const answer = useRef<HTMLDivElement>(null);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,26 +23,34 @@ export function SizeFinder() {
     if (c === null) bad.c = "Enter your chest in inches, between 32 and 56.";
     if (w === null) bad.w = "Enter your waist in inches, between 26 and 50.";
     setErr(bad);
-    if (bad.ft || c === null || w === null) { setSaved(false); return; }
+    if (bad.ft || c === null || w === null) {
+      setSaved(false);
+      // Put the cursor in the first field to correct, so the keyboard stays up on the right one.
+      form.current?.querySelector<HTMLInputElement>(bad.ft ? "#sf-ft" : c === null ? "#sf-c" : "#sf-w")?.focus();
+      return;
+    }
     setSizes(suggestSizes(h, c, w));
     setSaved(true);
+    // The answer sits under the button: put the keyboard away and bring the answer into view.
+    (document.activeElement as HTMLElement | null)?.blur?.();
+    requestAnimationFrame(() => answer.current?.scrollIntoView({ block: "nearest", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }));
   };
-  const field = (id: string, label: string, v: string, set: (x: string) => void, ph: string, bad: boolean, max = 2) => (
+  const field = (id: string, label: string, v: string, set: (x: string) => void, ph: string, bad: boolean, max = 2, last = false) => (
     <div className="flex min-w-0 flex-col gap-1">
       <label htmlFor={id}>{label}</label>
-      <input id={id} inputMode="numeric" pattern="[0-9]*" autoComplete="off" value={v} onChange={(e) => { set(e.target.value.replace(/\D/g, "").slice(0, max)); setSaved(false); }} placeholder={ph} aria-invalid={bad || undefined} aria-describedby={bad ? "sf-err" : "sf-hint"} className="field" />
+      <input id={id} type="text" inputMode="numeric" pattern="[0-9]*" autoComplete="off" enterKeyHint={last ? "done" : "next"} value={v} onChange={(e) => { set(e.target.value.replace(/\D/g, "").slice(0, max)); setSaved(false); }} placeholder={ph} aria-invalid={bad || undefined} aria-describedby={bad ? "sf-err" : "sf-hint"} className="field" />
     </div>
   );
   const errs = Object.values(err);
 
   return (
     <div className="col gap-8">
-      <form onSubmit={submit} noValidate className="flex w-full flex-col items-center gap-5">
+      <form ref={form} onSubmit={submit} noValidate className="flex w-full flex-col items-center gap-5">
         <div className="grid w-full grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-4">
           {field("sf-ft", "Height, feet", ft, setFt, "5", !!err.ft, 1)}
           {field("sf-in", "Height, inches", inch, setInch, "10", !!err.ft)}
           {field("sf-c", "Chest, inches", chest, setChest, "40", !!err.c)}
-          {field("sf-w", "Waist, inches", waist, setWaist, "32", !!err.w)}
+          {field("sf-w", "Waist, inches", waist, setWaist, "32", !!err.w, 2, true)}
         </div>
         {errs.length > 0
           ? <ul id="sf-err" role="alert" className="flex flex-col font-bold">{errs.map((x) => <li key={x}>{x}</li>)}</ul>
@@ -48,7 +58,7 @@ export function SizeFinder() {
         <button type="submit" className="btn">Work out my sizes</button>
       </form>
 
-      <div role="status" className="flex w-full flex-col items-center gap-3">
+      <div ref={answer} role="status" className="flex w-full scroll-mb-6 flex-col items-center gap-3">
         {sizes ? (
           <>
             <dl className="spec spec-even">

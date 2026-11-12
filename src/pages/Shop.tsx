@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Seo, breadcrumbs } from "../components/Seo";
 import { Plate } from "../components/Plate";
@@ -6,6 +5,7 @@ import { Crumbs, Title } from "../components/Layout";
 import { NotFound } from "./NotFound";
 import { cutIn, store, type Collection } from "../lib/store";
 import { useSizes } from "../lib/sizes";
+import { useKept } from "../lib/kept";
 import { FITS, JACKET_CHESTS, SITE, TROUSER_WAISTS, type Fit, type Sizes } from "../data/site";
 
 const ALL = { handle: "all", title: "The whole catalogue", blurb: "Every suit, dress, shirt and accessory for men, women and kids." };
@@ -57,10 +57,9 @@ export function Shop() {
   const { handle = "all" } = useParams();
   const c: Collection | undefined = handle === "all" ? ALL : store.collection(handle);
   const { sizes } = useSizes();
-  const [type, setType] = useState<string | null>(null);
-  const [fit, setFit] = useState<Fit | null>(null);
-  const [mine, setMine] = useState(false);
-  useEffect(() => { setType(null); setFit(null); setMine(false); }, [handle]);
+  const [type, setType] = useKept<string | null>("type", null);
+  const [fit, setFit] = useKept<Fit | null>("fit", null);
+  const [mine, setMine] = useKept("mine", false);
   if (!c) return <NotFound />;
 
   const base = store.products({ collection: handle });
@@ -107,7 +106,7 @@ export function Shop() {
         <div className="mx-auto max-w-[60rem]">
           {list.length ? (
             <ul>
-              {list.map((p, i) => <li key={p.handle} className={i ? "border-t border-hair" : ""}><Plate p={p} flip={i % 2 === 1} eager={i < 2} /></li>)}
+              {list.map((p, i) => <li key={p.handle} className={i ? "border-t border-hair" : ""}><Plate p={p} flip={i % 2 === 1} first={i === 0} /></li>)}
             </ul>
           ) : (
             <div className="col gap-4 border-y border-hair py-12">
