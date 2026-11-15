@@ -1,6 +1,6 @@
 import { Fragment, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Seo, breadcrumbs, absolute } from "../components/Seo";
+import { Seo, breadcrumbs, absolute, fit } from "../components/Seo";
 import { priceLine } from "../components/Plate";
 import { Picture } from "../components/Art";
 import { VLink } from "../components/VLink";
@@ -54,6 +54,13 @@ const fitNote = (p: Product) =>
   p.fit === "Slim" ? "The slim fit sits close, with a narrow lapel and a tapered leg."
     : p.fit === "Tailored" ? "The tailored fit sits close through the chest and waist, with a slight taper."
     : "The regular fit has a fuller chest and a straight leg.";
+
+/** " in navy wool blend": the colour and cloth words the name does not already say. */
+const clothWords = (p: Product) => {
+  const have = p.title.toLowerCase();
+  const w = [p.colour, p.cloth].map((x) => x.toLowerCase()).filter((x) => !have.includes(x)).join(" ");
+  return w ? ` in ${w}` : "";
+};
 
 export function ProductPage() {
   const { handle = "" } = useParams();
@@ -111,10 +118,10 @@ export function ProductPage() {
 
   return (
     <>
-      <Seo title={p.title} path={path} type="product" image={p.images[0] ? `/img/${p.images[0]}.webp` : undefined}
-        description={`${p.title} in ${p.colour.toLowerCase()} ${p.cloth.toLowerCase()}.${menSuit ? " Jacket and trousers in different sizes." : ""} I&A Formal, Tooting, London.`}
+      <Seo title={p.title} path={path} type="product" image={store.card(p)} imageAlt={store.cardAlt(p)}
+        description={fit(p.kind === "mtm" ? `Made to measure from ${SITE.madeToMeasure.from}, usually ${SITE.madeToMeasure.weeks}.` : `${p.title}${clothWords(p)}.`, menSuit && "Jacket and trousers in different sizes.", p.details, noReturn && `${noReturn}.`, `Walk in to ${SITE.address.street}, Tooting.`)}
         jsonLd={[breadcrumbs([{ name: "Home", path: "/" }, { name: collTitle, path: `/shop/${coll}` }, { name: p.title, path }]),
-          { "@context": "https://schema.org", "@type": "Product", name: p.title, description: p.details, ...(p.images.length ? { image: p.images.map((i) => absolute(`/img/${i}.webp`)) } : {}), material: p.cloth, color: p.colour, brand: { "@type": "Brand", name: SITE.name }, category: p.type }]} />
+          { "@context": "https://schema.org", "@type": "Product", name: p.title, description: p.details, image: p.images.length ? p.images.map((i) => absolute(`/img/${i}.webp`)) : [absolute(store.card(p))], material: p.cloth, color: p.colour, brand: { "@type": "Brand", name: SITE.name }, category: p.type }]} />
 
       <Title crumbs={<Crumbs trail={[[`/shop/${coll}`, collTitle]]} here={p.title} />} title={p.title} line={line} />
 

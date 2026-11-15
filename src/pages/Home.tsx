@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import { Link } from "react-router-dom";
-import { Seo } from "../components/Seo";
+import { Seo, WEBSITE_LD } from "../components/Seo";
 import { Engraving } from "../components/Art";
 import { FittingLine } from "../components/Tape";
 import { Heading, Title } from "../components/Layout";
@@ -19,7 +19,7 @@ export function Home() {
   const a = SITE.address;
   return (
     <>
-      <Seo title="Formal wear for men, women and kids in Tooting" path="/" description={`Suits, occasion and prom dresses, bridal and kids' formal wear. Made to measure from ${m.from} and alterations in our Tooting shop. Walk in, seven days a week.`} />
+      <Seo title="Formal wear for men, women and kids in Tooting" path="/" jsonLd={WEBSITE_LD} description={`Suits, occasion and prom dresses, bridal and kids' formal wear. Made to measure from ${m.from} and alterations in our Tooting shop. Walk in, seven days a week.`} />
 
       <Title hero title="Formal wear for men, women and kids" line={<>We have dressed Tooting from {a.street} since {SITE.since}. Come in and we will measure you.</>} />
 

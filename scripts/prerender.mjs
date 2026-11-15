@@ -46,9 +46,9 @@ for (const r of routes) {
 await browser.close(); server.close();
 
 const today = new Date().toISOString().slice(0, 10);
-writeFileSync(join(dist, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${routes.map((r) => `  <url><loc>${SITE}${r === "/" ? "/" : r}</loc><lastmod>${today}</lastmod><changefreq>${r.startsWith("/products") ? "weekly" : "monthly"}</changefreq><priority>${r === "/" ? "1.0" : r.startsWith("/shop/") ? "0.9" : "0.7"}</priority></url>`).join("\n")}\n</urlset>\n`);
+writeFileSync(join(dist, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${routes.map((r) => `  <url><loc>${SITE}${r === "/" ? "/" : `${r}/`}</loc><lastmod>${today}</lastmod><changefreq>${r.startsWith("/products") ? "weekly" : "monthly"}</changefreq><priority>${r === "/" ? "1.0" : r.startsWith("/shop/") ? "0.9" : "0.7"}</priority></url>`).join("\n")}\n</urlset>\n`);
 
-const cols = cat.collections.map((c) => `- [${c.title}](${SITE}/shop/${c.handle}): ${c.blurb}`).join("\n");
+const cols = cat.collections.map((c) => `- [${c.title}](${SITE}/shop/${c.handle}/): ${c.blurb}`).join("\n");
 writeFileSync(join(dist, "llms.txt"), `# I&A Formal
 
 > Formal wear for men, women and kids from I & A Fashions Limited (trading as I & A Formal), a family business at 84 Mitcham Road, Tooting, London SW17 9NG, trading since 1993. Men's and women's suits, occasion and prom dresses, bridal, and kids' suits and dresses (ages 2 to 16). Men's suits are sold with the jacket (chest 36 to 50, S/R/L) and trousers (waist 28 to 44, leg 30/32/34) in different sizes. Made to measure from £250: 50% deposit, usually 4 to 6 weeks, two fittings. Alterations in the shop. Walk in, no appointment needed: open Monday to Sunday 9am to 6pm. Phone 020 8767 8613. Delivery: standard £4.95 (5 working days), express £7.95 (48 hours), free on orders of £100 and over, click and collect in Tooting. 28-day returns; suits, bridal dresses and prom dresses are not returnable. Sister shops: I&A Fashions, I&A Schoolwear.
@@ -59,10 +59,10 @@ Note: this site is a concept preview. Products are samples; ordering opens at la
 ${cols}
 
 ## Help
-- [Find my sizes](${SITE}/find-my-sizes): jacket and trouser sizes from height, chest and waist
-- [Made to measure](${SITE}/made-to-measure): process, prices, deposit and timing
-- [Alterations](${SITE}/alterations): what we alter and how to ask
-- [Visit the shop](${SITE}/visit): address, hours, phone
-- [Delivery and returns](${SITE}/delivery-returns): delivery options and returns policy
+- [Find my sizes](${SITE}/find-my-sizes/): jacket and trouser sizes from height, chest and waist
+- [Made to measure](${SITE}/made-to-measure/): process, prices, deposit and timing
+- [Alterations](${SITE}/alterations/): what we alter and how to ask
+- [Visit the shop](${SITE}/visit/): address, hours, phone
+- [Delivery and returns](${SITE}/delivery-returns/): delivery options and returns policy
 `);
 console.log(`prerendered ${n} routes, sitemap + llms.txt written`);

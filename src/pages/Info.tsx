@@ -15,7 +15,7 @@ const where = `${a.street}, ${a.area}, ${a.city} ${a.postcode}`;
 export function FindMySizes() {
   return (
     <>
-      <Seo title="Find my sizes" path="/find-my-sizes" jsonLd={crumbs("Find my sizes", "/find-my-sizes")} description="Men's suits with the jacket and trousers in different sizes. Enter height, chest and waist for your jacket size and length, trouser waist and leg, and fit. I&A Formal, Tooting." />
+      <Seo title="Find my sizes" path="/find-my-sizes" jsonLd={crumbs("Find my sizes", "/find-my-sizes")} description="Our men's suits are sold as a jacket and trousers, each in its own size. Enter your height, chest and waist for your jacket, trousers and fit." />
       <Title crumbs={<Crumbs here="Find my sizes" />} title="Find my sizes" line="Our men's suits are sold as a jacket and trousers, each in its own size. Three measurements give you both, and the fit for your build." />
       <section className="wrap"><SizeFinder /></section>
       <section className="wrap col gap-5 pt-16">
@@ -38,7 +38,7 @@ export function MadeToMeasure() {
   return (
     <>
       <Seo title="Made to measure in Tooting" path="/made-to-measure" jsonLd={[crumbs("Made to measure", "/made-to-measure"), { "@context": "https://schema.org", "@type": "Service", name: "Made to measure suits", provider: { "@id": `${SITE.url}/#store` }, areaServed: "London", offers: { "@type": "Offer", priceCurrency: "GBP", price: "250", description: "From £250, 50% deposit" } }]}
-        description={`Made to measure from ${m.from}: ${m.deposit} deposit, ${m.fittings} fittings, usually ${m.weeks}. Walk in to 84 Mitcham Road, Tooting.`} />
+        description={`Made to measure from ${m.from}: ${m.deposit} deposit, ${m.fittings} fittings, usually ${m.weeks}. You choose the cloth and the details. Walk in to ${a.street}, Tooting.`} />
       <Title crumbs={<Crumbs here="Made to measure" />} title="Made to measure" line="You choose the cloth and the details. We measure you, fit the suit twice, and you collect it from the shop.">
         <dl className="spec spec-even mt-8 max-w-[30rem]">
           <dt>Price</dt><dd>From <span className="num">{m.from}</span></dd>
@@ -81,7 +81,7 @@ export function Alterations() {
   return (
     <>
       <Seo title="Alterations in Tooting" path="/alterations" jsonLd={[crumbs("Alterations", "/alterations"), { "@context": "https://schema.org", "@type": "Service", name: "Clothing alterations", provider: { "@id": `${SITE.url}/#store` }, areaServed: "London" }]}
-        description={`Hems, sleeves, waists and dresses altered in the shop at ${a.street}, Tooting. Walk in, ${SITE.hours}.`} />
+        description={`Hems, sleeves, waists and dresses altered in the shop at ${a.street}, Tooting. Walk in, no appointment needed: ${SITE.hours}.`} />
       <Title crumbs={<Crumbs here="Alterations" />} title="Alterations" line={<>We take up hems, shorten sleeves, let waists in or out and fit dresses, all at {a.street}.</>}>
         <p className="col pt-8"><span>Bring the garment in on any day, {SITE.hours.replace("Monday to Sunday, ", "")}. To ask about a job first, telephone {tel}.</span></p>
       </Title>

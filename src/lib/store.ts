@@ -33,6 +33,10 @@ const data = catalogue as unknown as { collections: Collection[]; products: Prod
 export const WHO: Record<Who, string> = { men: "Men", women: "Women", kids: "Kids" };
 
 export const store = {
+  /** The link-preview card (1200x630) for a piece: its own card when it has a photograph (made from that photograph by
+      builds/v7/seo/_scripts/cards.mjs into public/img/og/p/), otherwise the site card. */
+  card: (p: Product): string => (p.images.length ? `/img/og/p/${p.handle}.jpg` : "/img/og/og-home.jpg"),
+  cardAlt: (p: Product): string => (p.images.length ? `${p.title}, photographed in a frame, beside the I & A Formal lockup` : "I & A Formal: formal wear for men, women and kids, three framed drawings of a suit, a bridal gown and a boy's suit"),
   collections: (): Collection[] => data.collections,
   collection: (handle: string) => data.collections.find((c) => c.handle === handle),
   products: (f: { collection?: string; who?: Who[]; type?: string[]; fit?: Fit[] } = {}): Product[] =>

@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom";
-import { Seo, breadcrumbs } from "../components/Seo";
+import { Seo, breadcrumbs, fit as fitDesc } from "../components/Seo";
 import { Plate } from "../components/Plate";
 import { Crumbs, Title } from "../components/Layout";
 import { NotFound } from "./NotFound";
@@ -77,7 +77,7 @@ export function Shop() {
 
   return (
     <>
-      <Seo title={handle === "all" ? "Everything" : c.title} path={`/shop/${handle}`} description={`${c.blurb} I&A Formal, Tooting, London.`}
+      <Seo title={handle === "all" ? "Everything" : c.title} path={`/shop/${handle}`} description={fitDesc(c.blurb, `From I&A Formal at ${SITE.address.street}, Tooting, since ${SITE.since}.`, `Free delivery on orders of ${SITE.delivery.freeOver} and over.`, "Walk in, no appointment needed.")}
         jsonLd={[breadcrumbs([{ name: "Home", path: "/" }, { name: c.title, path: `/shop/${handle}` }]), { "@context": "https://schema.org", "@type": "CollectionPage", name: c.title, description: c.blurb }]} />
 
       <Title crumbs={<Crumbs here={c.title} />} title={c.title.replace("&", "and")} line={men ? `${c.blurb.split(". ")[0]}.` : c.blurb}>
