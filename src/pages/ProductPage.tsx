@@ -114,7 +114,7 @@ export function ProductPage() {
       : p.kind === "shirt" ? { body: <><Keys name="Collar" opts={COLLARS} value={a} pick={setA} /><Keys name="Sleeve" opts={SLEEVES} value={b} pick={setB} /></>, chosen: `Collar ${or(a)}, sleeve ${or(b)}` }
       : null;
 
-  const line = [p.fit && menSuit ? `${p.fit} fit` : null, p.cloth, p.colour].filter(Boolean).join(", ").toLowerCase().replace(/^./, (x) => x.toUpperCase());
+  const line = [p.fit && menSuit ? `${p.fit} fit` : null, p.cloth, p.colour === p.cloth ? null : p.colour].filter(Boolean).join(", ").toLowerCase().replace(/^./, (x) => x.toUpperCase());
 
   return (
     <>
