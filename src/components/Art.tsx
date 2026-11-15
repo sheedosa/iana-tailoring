@@ -38,12 +38,9 @@ const Shirt = ({ tie = 172 }: { tie?: number }) => (
 
 /* Jacket: the outline of both halves, then the pieces that mirror. */
 const JACKET_BODY = "M139 59 L128 63 L94 82 Q84 87 82 102 L74 256 L98 262 L99 260 L100 296 Q122 306 137 304 Q149 301 150 284 Q151 301 163 304 Q178 306 200 296 L201 260 L202 262 L226 256 L218 102 Q216 87 206 82 L172 63 L161 59 Z";
-const jacket = (
+/* The jacket's own lines (lapels, pockets, cuffs, buttons), shared by the jacket on a stand and the suit on a hanger. */
+const jacketLines = (
   <>
-    <Stand hem={300} />
-    <path {...B} d={JACKET_BODY} />
-    <path {...B} stroke="none" d="M139 59 L150 182 L161 59 Z" />
-    <Shirt />
     <Mirror>
       <path {...L} d="M139 59 L149 181 M128 63 L117 99 L126 105 L112 113 L149 181 M126 105 L140 88" />
       <path {...L} d="M98 262 L106 130 M75 244 L99 250 M109 232 L135 230 V238 L109 240 Z M123 150 L121 229" />
@@ -52,6 +49,30 @@ const jacket = (
     </Mirror>
     <path {...L} d="M150 182 V284 M167 141 L188 138 M167 144 L188 141" />
     <circle {...L} cx="150" cy="192" r="2.4" /><circle {...L} cx="150" cy="218" r="2.4" />
+  </>
+);
+const jacket = (
+  <>
+    <Stand hem={300} />
+    <path {...B} d={JACKET_BODY} />
+    <path {...B} stroke="none" d="M139 59 L150 182 L161 59 Z" />
+    <Shirt />
+    {jacketLines}
+  </>
+);
+
+/* A two-piece suit on a hanger: the trousers folded over the bar inside the jacket and falling below its hem. */
+const suit = (
+  <>
+    <Hanger y={50} />
+    <path {...B} d="M120 270 H180 L185 386 H115 Z" />
+    <path {...L} d="M150 290 V386 M116 378 H184" />
+    <path {...H} d="M164 288 H180 L185 386 H168 Z" />
+    <path {...B} d={JACKET_BODY} />
+    <path {...B} d="M139 59 L150 182 L161 59 Z" />
+    <path {...H} d="M141 70 L150 172 L159 70 Q150 76 141 70 Z" />
+    <path {...L} d="M139 59 Q150 66 161 59 M144 50 L139 59 M156 50 L161 59 M144 50 H156" />
+    {jacketLines}
   </>
 );
 
@@ -63,6 +84,7 @@ const threePiece = (
     <Shirt tie={148} />
     <Mirror>
       {/* waistcoat */}
+      <path {...H} d="M139 62 L150 150 V278 L141 267 L134 198 L136 112 Z" opacity="0.55" />
       <path {...L} d="M139 59 L150 150 M133 196 L140 268 L150 280 M134 226 L146 224 M134 229 L146 227" />
       {/* jacket, open */}
       <path {...L} d="M128 63 L116 99 L125 105 L110 113 L131 192 L132 300" />
@@ -164,23 +186,97 @@ const jumpsuit = (
   </>
 );
 
-const shopfront = (
+/* The white formal shirt, folded: a semi-cutaway collar, the placket, and a double cuff folded across the front. */
+const formalShirt = (
   <>
-    <path {...B} d="M30 70 H270 V372 H30 Z" />
-    <path {...L} d="M30 122 H270 M30 132 H270 M46 152 H186 V330 H46 Z M116 152 V330 M206 152 H254 V372 M206 152 V372 M30 330 H186 M30 372 H270 M12 372 H288 M214 262 h6" />
-    <path {...H} d="M46 152 H116 V330 H46 Z M214 162 H246 V250 H214 Z" />
-    <path {...L} d="M214 162 H246 V250 H214 Z M30 70 L22 58 H278 L270 70" />
+    <path {...B} d="M82 104 H218 V336 H82 Z" />
+    <path {...H} d="M82 336 H218 V104 H224 V342 H88 Z" />
+    <path {...B} d="M120 104 L106 84 Q150 66 194 84 L180 104 L150 128 Z" />
+    <path {...L} d="M120 104 L150 128 L180 104 M126 86 Q150 78 174 86 M124 98 L114 120 L146 134 M176 98 L186 120 L154 134" />
+    <path {...L} d="M144 132 V336 M156 132 V336" />
+    {[150, 186, 222, 258].map((y) => <circle key={y} {...L} cx="150" cy={y} r="2.1" />)}
+    <path {...B} d="M92 282 H140 V318 H92 Z" />
+    <path {...L} d="M92 300 H140 M116 300 V318" />
+    <circle {...L} cx="132" cy="309" r="3.2" /><path {...H} d="M92 300 H140 V306 H92 Z" />
   </>
 );
 
-const DRAW: Record<Art, ReactNode> = { jacket, waistcoat: threePiece, gown: prom, bridal, dress: midi, party, jumpsuit, shirt, tie, trousers, shopfront };
+/* A woman's trouser suit on a stand: a single-button blazer with a soft shoulder over straight-leg trousers. */
+const womensSuit = (
+  <>
+    <Stand hem={360} foot={false} />
+    <path {...B} d="M116 236 H184 L196 368 H156 L150 250 L144 368 H104 Z" />
+    <Mirror><path {...L} d="M124 262 L114 368" /><path {...H} d="M150 250 L144 368 H131 L146 236 Z" /></Mirror>
+    <g transform="translate(19.5 6) scale(0.87 0.95)">
+      <path {...B} d={JACKET_BODY.replace("L128 63 L94 82 Q84 87 82 102", "L128 63 Q100 74 92 90 Q86 98 85 110")} />
+      <path {...B} d="M139 59 L150 200 L161 59 Z" />
+      <path {...L} d="M139 59 Q150 74 161 59" />
+      <Mirror>
+        <path {...L} d="M139 59 L149 199 M128 63 L118 104 L127 110 L114 118 L149 199" />
+        <path {...L} d="M99 262 L105 136 M78 244 L99 250 M110 234 L134 232" />
+        <path {...H} d="M99 262 L105 136 L110 150 L104 260 Z M114 118 L149 199 L148 206 L112 124 Z" />
+      </Mirror>
+      <path {...L} d="M150 200 V284" />
+      <circle {...L} cx="150" cy="212" r="2.6" />
+    </g>
+  </>
+);
 
-/** A drawing on its Sage plate, 3:4. `small` draws a child's piece at four-fifths the scale. */
+/* A waterfall bunch of suiting swatches hung from its card: six cloths, each a little longer than the one in front so a
+   band of each shows with its pinked edge, in twill, check, pinstripe and plain. */
+const swatchBunch = (
+  <>
+    <path {...L} d="M150 44 V30 Q150 18 159 18 Q168 18 168 26" />
+    {[[352, "twill"], [324, "check"], [296, "stripe"], [268, "twill"], [240, "check"], [212, "plain"]].map(([y, kind], i) => {
+      const yy = y as number;
+      const outline = `M84 72 H216 V${yy} ${Array.from({ length: 22 }, (_, k) => `L${216 - 3 - k * 6} ${yy + 4} L${216 - 6 - k * 6} ${yy}`).join(" ")} Z`;
+      return (
+        <g key={i}>
+          <path {...B} d={outline} />
+          {kind === "twill" && <path {...H} d={`M84 ${yy - 30} H216 V${yy} H84 Z`} opacity="0.7" />}
+          {kind === "stripe" && <path {...L} d={Array.from({ length: 10 }, (_, k) => `M${94 + k * 12.5} ${yy - 28} V${yy - 1}`).join(" ")} />}
+          {kind === "check" && <><path {...K} d={`M84 ${yy - 28} H216 V${yy} H84 Z`} /><path {...L} d={Array.from({ length: 8 }, (_, k) => `M${92 + k * 17} ${yy - 28} V${yy - 1}`).join(" ")} /></>}
+          {kind === "plain" && <path {...L} d="M96 92 H136 V110 H96 Z M102 101 H130" />}
+        </g>
+      );
+    })}
+    <path {...B} d="M70 44 H230 V80 H70 Z" />
+    <path {...L} d="M76 50 H224 M76 74 H224" />
+    <circle {...L} cx="150" cy="62" r="4" />
+  </>
+);
+
+/* The shop front: cornice, fascia lettered between rules, pilasters, a window with a suit on a stand, the glazed door with its number. */
+const shopfront = (
+  <>
+    <path {...B} d="M24 64 H276 V380 H24 Z" />
+    <path {...L} d="M18 58 H282 V64 H18 Z" />
+    <path {...L} d="M24 112 H276 M40 70 H260 M40 74 H260 M40 102 H260 M40 106 H260" />
+    <text x="150" y="94" textAnchor="middle" fontSize="15" letterSpacing="2.4" fill="currentColor" style={{ fontFamily: "var(--font-display)" }}>I &amp; A FORMAL</text>
+    {/* pilasters */}
+    <path {...L} d="M24 64 V380 M40 112 V380 M260 112 V380 M276 64 V380 M20 112 H44 M256 112 H280 M20 118 H44 M256 118 H280" />
+    {/* the window, its transom and stall riser */}
+    <path {...L} d="M54 130 H186 V322 H54 Z M60 136 H180 V316 H60 Z M60 166 H180 M54 322 V380 M186 322 V380 M64 334 H176 V370 H64 Z" />
+    <path {...H} d="M60 136 H180 V166 H60 Z M150 170 L180 200 V214 L136 170 Z" />
+    <g transform="translate(78 160) scale(0.42)">{jacket}</g>
+    {/* the door: fanlight with the number, glazed top, two panels, letter plate and knob */}
+    <path {...L} d="M202 130 H250 V380 M202 130 V380 M202 148 H250 M208 154 H244 V236 H208 Z M208 248 H244 V306 H208 Z M208 314 H244 V372 H208 Z M216 242 H236" />
+    <path {...H} d="M208 154 H244 V236 H208 Z" opacity="0.5" />
+    <text x="226" y="143" textAnchor="middle" fontSize="10" fill="currentColor" style={{ fontFamily: "var(--font-sans)" }}>84</text>
+    <circle {...L} cx="240" cy="290" r="2.4" />
+    {/* the step and the pavement */}
+    <path {...L} d="M196 380 H256 V386 H196 Z M8 386 H292" />
+  </>
+);
+
+const DRAW: Record<Art, ReactNode> = { jacket, suit, waistcoat: threePiece, gown: prom, bridal, dress: midi, party, jumpsuit, shirt, "formal-shirt": formalShirt, "womens-suit": womensSuit, swatches: swatchBunch, tie, trousers, shopfront };
+
+/** A drawing on its Sage plate, 3:4. `small` draws a child's piece at nine-tenths the scale, standing on the same floor. */
 export function Engraving({ art, small = false, className = "", title }: { art: Art; small?: boolean; className?: string; title?: string }) {
   return (
     <svg viewBox="0 0 300 400" className={`aspect-[3/4] bg-sage text-green ${className}`} role={title ? "img" : undefined} aria-label={title} aria-hidden={title ? undefined : true} focusable="false">
       <Defs />
-      <g transform={small ? "translate(30 68) scale(0.8)" : undefined}>{DRAW[art]}</g>
+      <g transform={small ? "translate(15 37) scale(0.9)" : undefined}>{DRAW[art]}</g>
     </svg>
   );
 }

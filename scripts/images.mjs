@@ -9,6 +9,7 @@ const root = new URL("../public/img/", import.meta.url).pathname;
 const WIDTHS = [320, 480, 640, 800];
 const out = {};
 for (const dir of ["looks", "products"]) {
+  if (!existsSync(join(root, dir))) continue; // no photographs yet: every piece is drawn until the client's own arrive
   for (const f of readdirSync(join(root, dir)).sort()) {
     if (!f.endsWith(".webp") || /-(\d+|sm)\.webp$/.test(f)) continue;
     const src = join(root, dir, f), name = f.replace(/\.webp$/, "");

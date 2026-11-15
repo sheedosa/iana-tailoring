@@ -4,7 +4,6 @@ import { SizeFinder } from "../components/SizeFinder";
 import { FittingLine } from "../components/Tape";
 import { Engraving } from "../components/Art";
 import { Crumbs, Heading, Title } from "../components/Layout";
-import { photo, SIZES } from "../lib/store";
 import { SITE } from "../data/site";
 
 const tel = <a href={`tel:${SITE.phoneIntl}`} className="inl num whitespace-nowrap">{SITE.phone}</a>;
@@ -58,7 +57,7 @@ export function MadeToMeasure() {
 
       <section className="wrap flex flex-col items-center gap-6 pt-16">
         <Heading>The cloth</Heading>
-        <span className="frame w-full max-w-[26rem]"><img {...photo("products/swatches")} sizes={SIZES.page} alt="Suiting cloth swatches fanned out beside a wooden rule" loading="lazy" decoding="async" className="aspect-[4/3] object-cover object-[50%_40%]" /></span>
+        <span className="frame w-full max-w-[20rem]"><Engraving art="swatches" title="A bunch of suiting swatches hung from its card, drawn" /></span>
         <div className="col gap-3">
           <p>The cloth you choose sets the price, which we agree with you at your first visit. Prices start at <span className="num">{m.from}</span>.</p>
           <p className="text-mute">[CLOTH PRICE LIST TO COME]</p>

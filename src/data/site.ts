@@ -29,6 +29,9 @@ export const SITE = {
   madeToMeasure: { from: "£250", deposit: "50%", weeks: "4 to 6 weeks", fittings: 2 },
   appointments: "Walk in, no appointment needed",
   preview: true, // concept preview: sample products, ordering switched off
+  // Search engines are asked not to list the site (robots "noindex, follow" on every page) until the client confirms the facts.
+  // Titles, descriptions, canonicals, Open Graph, structured data and the sitemap stay in place. Set to true to go into search.
+  indexable: false,
   toConfirm: [
     "product range, names and prices (every product on the site is a sample)",
     "fits offered (slim / tailored / regular) and size runs for men, women and kids",
