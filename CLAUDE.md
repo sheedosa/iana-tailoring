@@ -47,3 +47,11 @@ Every link must work and share fully on GitHub Pages (`https://sheedosa.github.i
 - **Structured data allowed:** `ClothingStore` (address, telephone, hours, returns window from `SITE`) on every page, `WebSite` on Home, `BreadcrumbList` on inner pages, `CollectionPage` on listings, `Service` on made to measure (the one confirmed price, from £250) and alterations, `Product` with name, description, image, material, colour and brand. **No `offers` on products**: there are no confirmed prices. No placeholder or unconfirmed fact in JSON-LD.
 - **Head:** `lang="en-GB"`, theme colour Bottle green `#1f322b`, SVG favicon plus `favicon-32.png`, 180px `apple-touch-icon`, `site.webmanifest` with `scope`, 192, 512 and a maskable 512 icon (`_scripts/icons.mjs` from the sage marque). Every path carries `/iana-tailoring/`.
 - **Deep links:** `public/404.html` (noindex) sends an unknown path to `/?p=`, `main.tsx` restores it, and a path no route matches shows `NotFound`. `public/.nojekyll` is deployed. Search engines read only `https://sheedosa.github.io/robots.txt` for a project site; ours names the sitemap for tools that look.
+
+## UX evidence (v9)
+Every design or wording change names its evidence: a published standard or study (GOV.UK Service Manual and Design System, Baymard, WCAG 2.2) or a measurement taken on this site. No change on taste alone. Measured in November 2026 on every route at 390 and 1280 with `/home/claude/builds/v9/measure.cjs` (results in `/home/claude/builds/v9/`) and `forms.cjs`.
+- **Reading level.** Prose is written for a reading age of about 9 (GOV.UK content design): sentences of 25 words or fewer, one idea each.
+- **Kept on purpose:** one h1 per page, no vague button or link label, no unnamed control, no sideways overflow, every field with a visible label, and an empty form marks the fields to fix, describes each one and moves focus to the first.
+- **Not done yet:** nobody has been watched using the site. Before launch, watch three to five real customers do the main task on their own phones.
+- **This pass:** two sentences over 25 words (Home, Find my sizes) were split; the facts are unchanged.
+- **The size matrix** stays one choice at a time (chest, then length; waist, then leg): GOV.UK's one thing per page.

@@ -54,7 +54,7 @@ export function Home() {
 
       <section className="wrap col gap-5 pt-16 sm:pt-20">
         <Heading>Your jacket and trouser size</Heading>
-        <p>A man's suit here is sold as a jacket, by chest and length, and trousers, by waist and leg, so each half is chosen in its own size. Give us your height, chest and waist and we will mark your size on every suit.</p>
+        <p>A man's suit here is sold as a jacket and trousers. The jacket goes by chest and length, the trousers by waist and leg. So each half is chosen in its own size. Give us your height, chest and waist and we will mark your size on every suit.</p>
         <Link to="/find-my-sizes" className="btn btn-line">Find my sizes</Link>
       </section>
 

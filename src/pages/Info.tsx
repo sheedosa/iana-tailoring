@@ -25,7 +25,7 @@ export function FindMySizes() {
             {[["Short (S)", "under 5'8\"", "30"], ["Regular (R)", "5'8\" to 6'0\"", "32"], ["Long (L)", "over 6'0\"", "34"]].map(([x, y, z]) => <tr key={x}><td>{x}</td><td>{y}</td><td>{z}"</td></tr>)}
           </tbody>
         </table>
-        <p>The jacket size is your chest in inches. The slim fit suits a chest about 8 inches larger than the waist, the tailored fit about 6 inches, and the regular fit 4 inches or less. If you are between two sizes, take the larger and we will alter it in the shop.</p>
+        <p>The jacket size is your chest in inches. The slim fit suits a chest about 8 inches larger than the waist. The tailored fit suits about 6 inches, and the regular fit 4 inches or less. If you are between two sizes, take the larger and we will alter it in the shop.</p>
         <p className="text-mute">Women's pieces go by UK dress size and kids' pieces by age: [SIZE RANGES].</p>
       </section>
     </>
